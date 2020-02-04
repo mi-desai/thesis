@@ -1,6 +1,10 @@
 # thesis
 MS of Data Visualization - Thesis 2020
 
+
+![Data Structure](https://github.com/mi-desai/thesis/blob/master/Thesis%20Outline.png)<br/><br/>
+
+
 # Literature Review
 
 ## Texts
