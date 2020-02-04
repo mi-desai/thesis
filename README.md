@@ -51,12 +51,9 @@ https://journals.sagepub.com/doi/abs/10.1177/107769908706400217?journalCode=jmqb
 Outline: 
 
 
-# Research Question: 
-Financial Statement Visualization. Can visual notation aid in the understanding of regulatory disclosures related to corporate financial performance and provide a method to avoid misinterpretation of financial data and point out misrepresentation?
+# Research Question: Financial Statement Visualization. Can visual notation aid in the understanding of regulatory disclosures related to corporate financial performance and provide a method to avoid misinterpretation of financial data and point out misrepresentation?
 
-## Premise: 
-Financial Statements require significant professional training to read and interpret correctly.
-
+## Premise: Financial Statements require significant professional training to read and interpret correctly.
 
 ## Claims/Arguments 1: Most financial models that are built off of financial statements use Excel or spreadsheet-based technology.
 
