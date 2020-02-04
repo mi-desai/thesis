@@ -51,36 +51,36 @@ https://journals.sagepub.com/doi/abs/10.1177/107769908706400217?journalCode=jmqb
 Outline: 
 
 
-### Research Question: 
+# Research Question: 
 Financial Statement Visualization. Can visual notation aid in the understanding of regulatory disclosures related to corporate financial performance and provide a method to avoid misinterpretation of financial data and point out misrepresentation?
 
 ## Premise: 
 Financial Statements require significant professional training to read and interpret correctly.
 
 
-## Claims/Arguments 1: 
-# Most financial models that are built off of financial statements use Excel or spreadsheet-based technology.
-Spreadsheet error is a rampant problem that causes misinterpretation of data.
+## Claims/Arguments 1: Most financial models that are built off of financial statements use Excel or spreadsheet-based technology.
+
+### Spreadsheet error is a rampant problem that causes misinterpretation of data.
 Panko, Reinhardt, Rogoff Research demonstrate the scale of the problem.
 Impact: Austerity measures were implemented in various Eurozone countries that were based on the incorrect entry of data into certain spreadsheet cells, impacting the livelihoods of millions.
 
 
-# There are now alternatives to just using spreadsheets thanks to regulatory bodies like the SEC enforcing new standardization.
+### There are now alternatives to just using spreadsheets thanks to regulatory bodies like the SEC enforcing new standardization.
 The US SEC has created an In-line XML Schema for Web Documents for Publicly-Traded Companies called XBRL (eXtensible Business Reporting Language), making it far easier to scrape these data.
 Other countries are using their own XML Schema to mark-up their countries' financial regulatory filings, creating a new standard that can sidestep problems of spreadsheet error.
 Impact: XML and XBRL may form the basis for more structured data that makes more data visualization possible.
 
 
-# Financial data visualization has barely evolved beyond the tabular format.
+### Financial data visualization has barely evolved beyond the tabular format.
 International Business Communication Standards (Hichert), which create a visual notation for the effective communication of business reporting and insights.
 
 
-## Claims/Arguments 2: 
-Financial Reports can be easy to misinterpret, which can be caused by:
-# Replication Crisis (which may be due to spreadsheet error and limitations of spreadsheets).
+## Claims/Arguments 2: Financial Reports can be easy to misinterpret, which can be caused by:
+
+### Replication Crisis (which may be due to spreadsheet error and limitations of spreadsheets).
 Structured markup language and technology make it more difficult to introduce cell error into reporting and visualization.
 
-# Heuristics (mental assumptions) about what data means, that are often incorrect.
+### Heuristics (mental assumptions) about what data means, that are often incorrect.
 Can visualizations and presentation format improve retention, accuracy, and correct interpretation? Yes.
 Kanehman: System 1 Intuitive Thinking
 Visual versions of the same financial disclosures can improve speed absorbing the disclosure information, while not sacrificing any accuracy.
@@ -98,15 +98,14 @@ Continuity (e.g. forming dots into a line)
 Closure (complex visual arrangements tend to make people want to look for a single recognizable pattern)
 Focal Point (whatever stands out visually will capture and hold the viewer's attention first).
 
-# Cognitive Biases
+### Cognitive Biases
 Biases can be established or removed via presentation format.
 Impact: This drives away stakeholders who may be impacted by corporate financial performance because of the difficulties of current presentation format.
 Impact: This can misinform stakeholders who do pay attention or can read financial regulatory disclosures.
 
-## Claims/Arguments 3: 
+## Claims/Arguments 3: Financial Reports may be misrepresented.
 
-# Financial Reports may be misrepresented.
-# Incorporation of visual notation to point out common financial reporting misrepresentations or points of confusion.
+### Incorporation of visual notation to point out common financial reporting misrepresentations or points of confusion.
 
 <ul>
 <li>Accrual Versus Cash Accounting.</li>
