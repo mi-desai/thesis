@@ -64,6 +64,15 @@ For instance, many companies are compared on the basis of metrics called EBITDA 
 
 One idea that I had to be able to entice users to think about they interact with performance data is to include a "Metric Builder" which would involve clicking or touching a number of bar in the visualization and adding it to a metric or ratio that gets built as the user progresses through the visualization. 
 
+
+## Potential App Structure and Data Flow...?
+
+![Data Structure](https://github.com/mi-desai/thesis/blob/master/App%20Structure.png)<br/><br/>
+
+
+
+
+
 <br><br><br>
 
 # Assignment 1: Research Question and Outline - January 2020
