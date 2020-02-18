@@ -1,20 +1,72 @@
 # Thesis
 MS of Data Visualization - Thesis 2020 - Michael Desai
 
-# Assignment 3: Form
+# Assignment 2: Form - February 18, 2020
 
-I've worked on several mock-ups of my design so far. 
+### Reminder - My research question is as follows: Can visualization and common visual notation aid in understanding of financial disclosures and corporate performance? How effective is it in avoiding misinterpretation of financial data and pointing out potential misrepresentation?
 
+I've worked on several mock-ups of my design for this project so far, with the intention of creating a series of visualizations and accompanying UI that makes this difficult to understand topic much easier to understand. But for whom? And what is a user expected to know or understand ahead of time? Can users learn and take away something from the visual experience?
 
+It is best to first start with the designs, which are posted below. 
 
+## Profit and Loss Statement
+(Inspired by Rolf Hichert's horizontal waterfall chart)
 
+Version 1.1
+![Data Structure](https://github.com/mi-desai/thesis/blob/master/Income%20Statement%20Version%201.1.jpg)<br/><br/>
 
+Version 1.2
+![Data Structure](https://github.com/mi-desai/thesis/blob/master/P%26L%20Page%20Wireframe.png)<br/><br/>
 
+## Balance Sheet
 
+Version 1.1
+![Data Structure](https://github.com/mi-desai/thesis/blob/master/Balance%20Sheet%20Version%201.1.jpg)<br/><br/>
 
+## Cash Flow Statement
 
+Version 1.2
+![Data Structure](https://github.com/mi-desai/thesis/blob/master/CFS%20Version%201.2.jpg)<br/><br/>
 
-# Assignment 1: Research Question and Outline
+## Company Comparative Analysis Chart
+(Inspired by Adrian Crockett's Bump Chart Visualization for Investment Banking Comps)
+
+Version 1.2
+![Data Structure](https://github.com/mi-desai/thesis/blob/master/Comps%20Version%201.1.JPG)<br/><br/>
+
+## Background
+
+First, some background is in order. Financial disclosures of corporate performance involve three main accounting statements, which form of the backbone of understanding how money is made and raised in any company, no matter how large or small. The first of the three statements is the income statement, which shows profits generated over a particular period of time, usually a quarter of a year or a full year. The second is the balance sheet, sometimes also called the statement of financial position, and it shows the firm's assets, or property that is expected to be worth money either right now or in the future, liabilities, which show how much a firm owes to other entities at this particular point in time, and equity, which is the surplus of assets over liabilities. The balance sheet is a snapshot of a firm at one particular point in time, unlike the income statement. The last of the main statements is the cash flow statement, which reconciles the profits reported by the income statement to actual cash earned by the firm, invested by the firm, and raised by the firm over a particular period of time, which is once again, usually a quarter or a year.
+
+There are other statements used to understand accounting rules, but they are for the most part much less important than these three.
+
+## Audience
+
+At first, I wanted to make a series of visualizations with accompanying UI that would be accessible to everyone. Designing these statement visualizations has made me reassess this, as the problem is not necessarily the quantities of each of the accounts in the statements themslves, nor is it the change over time, but what each account specifically MEANS. Even in a visual format, users without any training at all in accounting would find the significance of many accounting items hard to understand, even if they did grasp that amounts were rising, or falling, or if the latest change was more or less than the prior year. 
+
+Thus, I think it might be better to target my visualizations and UI at financial professionals, journalists, and policy-makers with some training already, specifically those who are hard-pressed to read through an entire company's performance record the "old-fashioned way" - i.e. to actually read the forms filed with the SEC. As this was essentially my job in the past, I can attest that is very inefficient and easy to make mistakes.
+
+In order to impart more MEANING on this visualization of accounting information, I think it would be prudent to present a storytelling narrative to drive home how the visualization and data can be used. In this way, the user can see how they might be able to use it for their own needs. The subjects of this storytelling narrative would have to fulfill a range of use cases - one for a company that experienced a lot of growth over a short period of time, another for a successful company undergoing a major investigation or transition, etc. 
+
+## User Media and Interface
+
+The current design revolves around the use of scroll and click/touch. Limited hover functionality may be included in a desktop version, but since so much of the financial audience uses their phones to obtain information, it is inadvisable to separate out functionality too much. 
+
+The interface I have planned out is pretty packed already, and thus it might make sense to include additional tabs and UI elements for multiple layers. 
+
+## User Experience
+
+I want users to be able to not only see the narratives of the company use cases and the visualizations at the end, but also to be able to interact with each piece of data on the screen. 
+
+Corporate financial data is very unique in that it all comes from the same uniform sources (or mostly does) but a huge amount of additional calculation is performed on it to incorporate it into unique metrics that are not especially uniform. 
+
+For instance, many companies are compared on the basis of metrics called EBITDA (Earnings Before Interest Taxes Depreciation Amortization) and FCF (Free Cash Flow, which can be either to the firm, or to equity, which changes its calculation significantly). 
+
+One idea that I had to be able to entice users to think about they interact with performance data is to include a "Metric Builder" which would involve clicking or touching a number of bar in the visualization and adding it to a metric or ratio that gets built as the user progresses through the visualization. 
+
+<br><br><br>
+
+# Assignment 1: Research Question and Outline - January 2020
 
 ![Data Structure](https://github.com/mi-desai/thesis/blob/master/Thesis%20Outline.png)<br/><br/>
 
