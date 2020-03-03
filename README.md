@@ -1,6 +1,13 @@
 # Thesis
 MS of Data Visualization - Thesis 2020 - Michael Desai
 
+# Assignment 3: Prototype - March 3, 2020
+
+https://xd.adobe.com/view/c3859393-6962-4bd4-5898-a8dbaf23c9cd-b5b4/
+
+
+
+
 # Assignment 2: Form - February 18, 2020
 
 ### Reminder - My research question is as follows: Can visualization and common visual notation aid in understanding of financial disclosures and corporate performance? How effective is it in avoiding misinterpretation of financial data and pointing out potential misrepresentation?
