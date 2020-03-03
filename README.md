@@ -7,6 +7,15 @@ Design 1: https://xd.adobe.com/view/c3859393-6962-4bd4-5898-a8dbaf23c9cd-b5b4/
 
 Design 2: 
 
+Landing Page
+![Data Structure](https://github.com/mi-desai/thesis/blob/master/Landing%20Page.png)<br/><br/>
+
+P&L Page
+![Data Structure](https://github.com/mi-desai/thesis/blob/master/P%26L%20Page%20Wireframe.png)<br/><br/>
+
+Balance Sheet
+![Data Structure](https://github.com/mi-desai/thesis/blob/master/Balance%20Sheet%20Wireframes.png)<br/><br/>
+
 
 
 
