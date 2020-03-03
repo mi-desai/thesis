@@ -3,7 +3,9 @@ MS of Data Visualization - Thesis 2020 - Michael Desai
 
 # Assignment 3: Prototype - March 3, 2020
 
-https://xd.adobe.com/view/c3859393-6962-4bd4-5898-a8dbaf23c9cd-b5b4/
+Design 1: https://xd.adobe.com/view/c3859393-6962-4bd4-5898-a8dbaf23c9cd-b5b4/
+
+Design 2: 
 
 
 
