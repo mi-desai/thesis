@@ -16,7 +16,11 @@ P&L Page
 Balance Sheet
 ![Data Structure](https://github.com/mi-desai/thesis/blob/master/Balance%20Sheet%20Wireframes.png)<br/><br/>
 
+What Statements Actually Look Like: 
 
+![Data Structure](https://github.com/mi-desai/thesis/blob/master/SEC%20Tabular%20Example%201.PNG)<br/><br/>
+![Data Structure](https://github.com/mi-desai/thesis/blob/master/SEC%20Tabular%20Example%202.PNG)<br/><br/>
+![Data Structure](https://github.com/mi-desai/thesis/blob/master/SEC%20Tabular%20Example%203.PNG)<br/><br/>
 
 
 # Assignment 2: Form - February 18, 2020
