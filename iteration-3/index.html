@@ -1,0 +1,20 @@
+
+<head>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<style rel="stylesheet" type="text/css" href="styles.css"></style>
+</head>
+
+
+<body>
+<div id="finviz">
+    <h1> {{ title }}</h1>
+    <p>{{totals}}</p>
+<svg :height="svg_height" :width="svg_width">
+    <income-statement :totals="totals"></income-statement>
+    <line :x1="totals[0].bar.x" y1="0" :x2="totals[0].bar.x" :y2="svg_height - margin.bottom" stroke="black" />
+</svg>
+</div>
+
+<script src="main.js"></script>
+</body>

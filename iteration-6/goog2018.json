@@ -1,0 +1,150 @@
+
+
+{  
+    "entity_name": "Alphabet Inc", 
+    "ticker": "GOOG",
+    "period": "12_31_2018",
+    "scale": 1000000,
+    "shares": [
+        ["oustanding", 695186396],
+        ["eps_basic", 49.59],
+        ["eps_diluted", 49.16],
+        ["weighted_avg_shares", 0],
+        ["weighted_avg_shares_diluted", 0]
+    ], 
+    "balance_sheet": {
+        "assets": {
+            "current_assets":[
+                ["Cash and Cash Equivalents", 16701],
+                ["Marketable Securities", 92439],
+                ["Accounts Receivable, net of allowance", 20838],
+                ["Income taxes receivable, net", 355],
+                ["Inventory", 1107],
+                ["Other Current Assets", 4236]
+            ], 
+            "total_current_assets": 135676,
+            "non_current_assets": [
+                ["Non-marketable Investments", 13859],
+                ["Deferred Income Taxes", 737],
+                ["Property and equipment, net", 59719],
+                ["Intangible assets, net", 2220],
+                ["Goodwill", 17888],
+                ["Other non-current assets", 2693] 
+            ],
+            "total_non_current_assets": 97116, 
+            "total_assets": 232792
+        },
+        "liabilities": {
+            "current_liabilities": [
+                ["Accounts Payable", 4378],
+                ["Accrued compensation and benefits", 6839],
+                ["Accrued expenses and other current liabilities", 16958],
+                ["Accrued revenue share", 4592],
+                ["Deferred revenue", 1784],
+                ["Income taxes payable, net", 69]
+            ],
+            "total_current_liabilities": 34620, 
+            "non_current_liabilities": [
+                ["Long-term Debt", 4012],
+                ["Deferred revenue, non-current", 396],
+                ["Income taxes payable, non-current", 11327],
+                ["Deferred income taxes", 1264],
+                ["Other long term liabilities", 3545]
+            ], 
+            "total_non_current_liabilities": 20544,
+            "total_liabilities": 55164
+        }, 
+        "equity": {
+            "stock": [
+                ["Common Stock", 45049],
+                ["Accumulated Other Comprehensive Income (Loss)", -2306],
+                ["Retained Earnings", 134885]
+            ],
+            "preferred_stock": [],
+            "minority_interest": null, 
+            "total_equity": 177628
+        }
+    },
+    "income_statement": {
+        "revenue": [
+            { "component": ["Google Search & other", 85296] },
+            { "component": ["Youtube ads", 11155] },
+            { "component": ["Google Network Members' Properties", 20010] },
+            { "component": ["Google Cloud", 5838] },
+            { "component": ["Google other", 14063] },
+            { "component": ["Other Bets revenues", 595] },
+            { "component": ["Hedging gains (losses)", -138] }
+        ],
+        "total_revenue": 136819,
+        "operating_expenses": [
+            { "component": ["Cost of Revenues", 59549] },
+            { "component": ["Research and Development", 21419] },
+            { "component": ["Sales and Marketing", 18.464] },
+            { "component": ["General and Administrative", 9.551] },
+            { "component": ["European Commission Fines", 1.697] }
+        ],
+        "total_operating_costs": -110498,
+        "operating_income": 26321,
+        "other_income_expense": [
+            { "component": ["Interest Income", 1220] },
+            { "component": ["interest Expense", -124] },
+            { "component": ["Foreign currency exchange gain (loss), net", -475] },
+            { "component": ["Gain (loss) on debt securities, net", -53] },
+            { "component": ["Gain (loss) on equity securities, net", -20] },
+            { "component": ["Gain (loss) and impairmet from equity method investments, net", -202] },
+            { "component": ["Other", 88] }
+        ],
+        "total_other_income_expense": 8592,
+        "pretax_income": 34913,
+        "total_tax_provision": -4177, 
+        "net_income_attributable_noncontrolling_interest": null,
+        "net_income": 30736,
+        "net_income_post_minority_interest": null
+    }, 
+    "cash_flow_statement": {
+        "operating_cash_flows": {
+            "reconciliation_adjustments": [
+                ["Depreciation and impairment of property and equipment", 8164],
+                ["Amortization and impairment of intangible assets", 871],
+                ["Stock-based compensation expense", 9353],
+                ["Deferred income taxes", 778],
+                ["(Gain) loss on debt and equity securities", -6650],
+                ["Other", -189]
+            ],
+        "total_reconciliation_adjustments": 12327,
+            "working_capital_changes": [
+                ["Accounts receivable", -2169],
+                ["Income taxes, net", -2251],
+                ["Other assets", -1207],
+                ["Accounts payable", 1067],
+                ["Accrued expenses and other liabilities", 8614],
+                ["Accrued revenue share", 483],
+                ["Deferred revenue", 371]
+            ],
+        "total_change_in_working_capital": 4908,
+        "total_operating_cash_flows": 47971,
+        "investing_cash_flows": [
+            ["Purchases of property and equipment", -25139],
+            ["Procceds from disposals of property and equipment", 98],
+            ["Purchases of marketable securities", -50158],
+            ["Maturities and sales of marketable securities", 48507],
+            ["Purchases of non-marketable investments", -2073],
+            ["Maturities and sales of non-marketable investments", 1752],
+            ["Acquisitions, net of cash acquired, and purchases of intangible assets", -1491]
+        ],
+        "total_investing_cash_flows": -28504, 
+        "financing_cash_flows": [
+            ["Net payments related to stock-based award activities", -4993],
+            ["Repurchases of capital stock", -9075],
+            ["Proceeds from issuance of debt, net of costs", 6766],
+            ["Repayments of debt", -6827],
+            ["Proceeds from sale of subsidiary shares", 950]
+        ],
+        "total_financing_cash_flows": -13179,
+        "other_cash_effects": -302,
+        "change_in_cash": 5986,
+        "beginning_cash_balance": 10715,
+        "ending_cash_balance": 16701
+        }
+    }
+}

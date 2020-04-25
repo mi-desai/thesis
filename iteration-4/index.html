@@ -1,0 +1,55 @@
+<head>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+
+<body>
+    <div id="finviz">
+
+        <div id="top">
+            <top-menu></top-menu>
+        </div>
+
+        <div class="mainRow">
+
+            <div id=nav>
+            
+                <div id="firstNavRow">
+                    <company-selector @companychange="updateCompany"></company-selector>
+                    
+                </div>
+                <div id="secondNavRow">
+                    <year-selectors @currentyearchange="getNewCurrent" @baseyearchange="getNewBase"></year-selectors>
+                </div>
+                <div id="thirdNavRow">
+                    <previous-button></previous-button>
+                    <next-button></next-button>
+                </div>
+                <div id="fourthNavRow">
+                    <options-menu></options-menu>
+                </div>
+                <div id="fifthNavRow">
+                    <br>Metric Builder goes Here.<br>
+                </div>
+            </div>
+            <br>
+
+            <div id=main>
+                <svg :height="svg_height" :width="svg_width">
+                    <income-statement :totals="totals"></income-statement>
+                    <!-- <line x1="685" x2="685" y1="65" y2="85" stroke="black"></line>
+                    <line x1="280" x2="280" y1="120" y2="140" stroke="black"></line> -->
+                </svg>
+                <div id="tooltip"></div>
+            </div>
+        </div>
+
+        
+        <div id="bottom"> Data Table Goes here. </div>
+
+
+    </div>
+
+    <script src="main.js"></script>
+</body>

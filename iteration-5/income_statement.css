@@ -1,0 +1,28 @@
+
+rect {
+    fill: teal;
+    opacity: 0.6;
+    stroke: black;
+    transition: all 0.5s ease-in-out 0.5s;
+}
+
+.negative rect {
+    fill: #E8AEB7;
+}
+
+.EBIT rect {
+    fill: black;
+}
+
+.Pretax rect {
+    fill: black;
+}
+
+.NetIncome rect {
+    fill: black;
+}
+
+text {
+    font-family: monospace;
+    transition: all 0.5s ease-in-out 0.5s;
+}

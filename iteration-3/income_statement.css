@@ -1,0 +1,25 @@
+
+rect {
+    fill: lightblue;
+    opacity: 0.5;
+}
+
+.negative {
+    fill: pink;
+}
+
+.EBIT {
+    fill: grey;
+}
+
+.Pretax {
+    fill: grey;
+}
+
+.NetIncome {
+    fill: grey;
+}
+
+body {
+    background: beige;
+}

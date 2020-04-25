@@ -1,0 +1,15 @@
+select {
+    background-color:#efefef;
+    opacity: 0.6;
+    color: black;
+    width: 80%;
+    margin: 5px;
+    display: block;
+    border-radius: .25em;
+    text-align: center;
+}
+
+.select {
+    align-items: center; 
+    padding: 0 0 0 0.25em;
+}
