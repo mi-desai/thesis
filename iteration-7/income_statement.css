@@ -1,0 +1,43 @@
+
+rect {
+    fill: teal;
+    opacity: 0.6;
+    stroke: black;
+    transition: all 0.5s ease-in-out 0.5s;
+}
+
+rect:hover {
+    fill: orange;
+    transition: all 0.1s ease-in;
+}
+
+.negative rect {
+    fill: #E8AEB7;
+}
+
+.negative rect:hover {
+    fill: orange;
+    transition: all 0.1s ease-in;
+}
+
+.EBIT rect {
+    fill: black;
+}
+
+.EBIT rect:hover {
+    fill: orange;
+    transition: all 0.1s ease-in;
+}
+
+.Pretax rect {
+    fill: black;
+}
+
+.NetIncome rect {
+    fill: black;
+}
+
+text {
+    font-family: monospace;
+    transition: all 0.5s ease-in-out 0.5s;
+}
