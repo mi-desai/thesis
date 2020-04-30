@@ -1,5 +1,5 @@
-
 const DEBUG = true;
+
 //"Bar" components are the rectangles
 Vue.component('bar', {
     props: {
@@ -103,34 +103,31 @@ Vue.component('bar', {
             }
         }, 
 
-        mouseover() {
-            // d3.select('#datatip')
-            //     .style('display', 'block');
-            this.$emit('showBar', this.label, this.y);
+        mouseenter() {
+            this.$emit('showBar', this.label, [this.end + 10, this.y]);
         },
 
         mouseleave() {
-            // d3.select('#datatip')
-            //     .style('display', 'none');
             this.$emit('hideBar');
         }
 
     },
-    template: `<g><rect @click="breakout" @mouseover="mouseover" @mouseleave="mouseleave" :class="type" :x="start" :y="y" 
+    template: `<g><rect @click="breakout" @mouseenter="mouseenter" @mouseleave="mouseleave" :class="type" :x="start" :y="y" 
     :width="end" :height="height"></rect>
     <text :x="end+start+10" :y="y+height/1.5"> {{account}} : {{value}} </text>
     <line :x1="lineX" :x2="lineX" :y1="y+height" :y2="y+height+20" stroke="black"></line>
     </g>`
 })
 
+//"Datatip is the tooltip for the bars"
 Vue.component('datatip', {
     props: {
         totals: Array,
         label: String,
         showing: Boolean,
-        y: Number
+        position: Array
     },
-    template: `<div id="datatip" v-if="showing" :style="{top:y+50}"> {{ totalOfInterest }}</div>`,
+    template: `<div id="datatip" v-if="showing" :style="{top:position[1]+50, left: position[0] + 175}"> {{ totalOfInterest }}</div>`,
     data: function () {
         return {}
     },
@@ -150,6 +147,127 @@ Vue.component('datatip', {
             style.rel = "stylesheet";
             style.href = 'datatip.css';
             document.head.appendChild(style)
+        }
+    
+})
+
+//Data Table takes the base and current years of a company and returns a table element to the UI on the right
+Vue.component('data-table', {
+    props: {
+        company: Object,
+        base: Object
+    },
+    template: `<div id="dataTable"> {{ base }} </div>`,
+    data: function () {
+        return {}
+    },
+    computed: {
+        currentYear: function() {
+            return +this.company.period.slice(-4);
+        },
+        baseYear: function() {
+            return +this.base.period?.slice(-4);
+        },
+        metrics: function() {
+            const current = this.company;
+            const base = this.base;
+            const tableValues = this.metricCalcs(current, base);
+
+            return tableValues;
+        }
+    },
+    methods: {
+        metricCalcs: function(current, base) {
+            pl1 = current.income_statement;
+            bs1 = current.balance_sheet;
+            cfs1 = current.cash_flow_statement;
+
+            pl2 = base.income_statement;
+            bs2 = base.balance_sheet;
+            cfs2 = base.cash_flow_statement;
+
+            let metrics = {
+                base: {
+                    gross_margin: 0,
+                    operating_margin: pl2.operating_income / pl2.total_revenue,
+                    pretax_margin: pl2.pretax_income / pl2.total_revenue,
+                    net_profit_margin: pl2.net_income / pl2.total_revenue,
+                    revenue_growth: ' - ',
+                    eps: 0,
+                    roe: pl2.net_income / bs2.equity.total_equity,
+                    cash: 0,
+                    ebitda: 0,
+                    leverage: 0,
+                    coverage: 0,
+                    roa: pl2.total_revenue / bs2.assets.total_assets
+                }, 
+                current: {
+                    gross_margin: 0,
+                    operating_margin: pl1.operating_income / pl1.total_revenue,
+                    pretax_margin: pl1.pretax_income / pl1.total_revenue,
+                    net_profit_margin: pl1.net_income / pl1.total_revenue,
+                    revenue_growth: (pl1.total_revenue / pl2.total_revenue) - 1,
+                    eps: 0,
+                    roe: pl1.net_income / bs1.equity.total_equity,
+                    cash: 0,
+                    ebitda: 0,
+                    leverage: 0,
+                    coverage: 0,
+                    roa: pl1.total_revenue / bs1.assets.total_assets
+                }
+            };
+
+            
+            //get eps
+            function getEPS(statement) {
+                let shares = statement.shares;
+                let eps;
+                for (let i = 0; i < shares.length; i++) {
+                    if (shares[i].includes("Diluted EPS")) {
+                        eps = shares[i][1];
+                    }
+                }
+                return eps;
+            }
+
+            //get gross margin
+            // function getCOGS(statement) {
+            //     let costs = statement.income_statement.operating_expenses;
+            //     let cogs;
+
+            //     for (let i = 0; i < costs.length; i++) {
+            //         console.log(costs[i]);
+            //         if (costs[i].startsWith("Cost of")) {
+            //             cogs = costs[i][1]
+            //             console.log(cogs);
+            //         }
+            //     } 
+            // }
+
+            //get cash
+
+            
+            //get ebitda
+            //get leverage
+            //get coverage
+
+
+            
+
+
+
+            return metrics;
+        }
+    },
+        
+        
+    mounted: function () {
+            let style = document.createElement('link');
+            style.type = "text/css";
+            style.rel = "stylesheet";
+            style.href = 'table.css';
+            document.head.appendChild(style)
+
         }
     
 })
@@ -208,9 +326,8 @@ Vue.component('income-statement', {
         
     },
     methods: {
-        showBar: function(label, y) {
-            console.log("income statement", label);
-            this.$emit('showbar', label, y);
+        showBar: function(label, position) {
+            this.$emit('showbar', label, position);
         }, 
         hideBar: function() {
             this.$emit('hidebar');
@@ -226,6 +343,7 @@ Vue.component('income-statement', {
     }
 })
 
+//this component emits a stock ticker that is used to update the values of company and base in the root app
 Vue.component('company-selector', {
     props: {},
     template: `<div class="select">
@@ -249,12 +367,12 @@ Vue.component('company-selector', {
     }, 
     methods: {
         changeCompany: function (event) {
-            console.log(event.target.value);
             this.$emit('companychange', event.target.value);
         }
     }
 })
 
+//this component emits an event that increases the current year by one
 Vue.component('next-button', {
     props: {
         year: Number
@@ -278,6 +396,7 @@ Vue.component('next-button', {
     }
 })
 
+//this component emits an event that decreases the current year by one
 Vue.component('previous-button', {
     props: {
         year: Number
@@ -298,6 +417,7 @@ Vue.component('previous-button', {
     }
 })
 
+//this component contains some data taken from the current company object
 Vue.component('top-menu', {
     props: {
         company: Object
@@ -321,6 +441,7 @@ Vue.component('top-menu', {
     <div class="subtitle"> {{company.period.slice(-4)}} Income Statement </div></div></div>`
 })
 
+//this component emits the value of the checkboxes to enable or disable certain events
 Vue.component('options-menu', {
     props: {
         totals: Array
@@ -335,6 +456,11 @@ Vue.component('options-menu', {
         style.href = 'options.css';
         document.head.appendChild(style)
     },
+    methods: {
+        toggleTable: function() {
+            this.$emit('toggletable');
+        }
+    },
     template: `<div class="options">Toggle View:<br><br>
     <label class="container">Comparison
         <input type="checkbox">
@@ -345,7 +471,7 @@ Vue.component('options-menu', {
         <span class="checkmark"></span>
         </label><br>
         <label class="container">Table
-        <input type="checkbox">
+        <input id="tableCheck" type="checkbox" @change="toggleTable">
         <span class="checkmark"></span>
         </label><br>
         <label class="container">Spotlight
@@ -355,6 +481,7 @@ Vue.component('options-menu', {
     </div>`
 })
 
+//this allows for the base year to be set
 Vue.component('year-selectors', {
     props: {
         
@@ -395,7 +522,6 @@ Vue.component('year-selectors', {
 })
 
 //root
-
 var app = new Vue({
     el: '#finviz',
     data: {
@@ -403,7 +529,7 @@ var app = new Vue({
         svg_width: 900,
         margin: { top: 50, left: 50, bottom: 25, right: 500 },
         svg_height: 550,
-        //right now this is what contains all the data being rendered
+        //right now this is what contains all the data being rendered, it has a default return in there already
         company: {
             "entity_name": "Cheniere Energy Inc",
             "ticker": "LNG",
@@ -558,8 +684,9 @@ var app = new Vue({
         intervening: {},
         base: {},
         label: '',
-        y: 0,
-        showing: false
+        position: [],
+        showing: false,
+        tableVisible: false
     },
 
     //this sets the default styles for the page and might be where I put in default values for current and base
@@ -573,12 +700,14 @@ var app = new Vue({
     },
 
     computed: {
+
         //this returns the whatever the current year is to pass to the buttons
         currentDisplay: function () {
             let currentYear = parseInt(this.company.period.slice(-4)); 
             return currentYear;
         },
 
+        //this returns a lower-case ticker
         currentTicker: function () {
             return this.company.ticker.toLowerCase();
         },
@@ -593,7 +722,7 @@ var app = new Vue({
             return this.svg_height - this.margin.top - this.margin.bottom;
         },
 
-        //this computes the totals needed to produce the main bars
+        //this computes the totals needed to produce the bars in the main visualization
         totals: function () {
             const input = this.processTotals().totals;
             const xDomain = input.map(item => item.value);
@@ -951,13 +1080,11 @@ var app = new Vue({
 
                         //if positive, define start and end
                         if (checkNeg === 0) {
-                            console.log("positive case");
                             start = xScale(prior.value) + zeroPos;
                             end = xScale(step.value);
 
                             //special case if the value of the account is 0, it shouldn't be scaled to the position of 0. 
                             if (step.value === 0) {
-                                console.log("special zero case....");
                                 end = 0;
                             }
 
@@ -965,21 +1092,18 @@ var app = new Vue({
 
                         // if negative, define start and end
                         if (checkNeg != 0) {
-                            console.log("negative case");
                             start = ignorant[2].pretax_range - (xScale(step.value) + zeroPos);
                             end = Math.abs(zeroPos - xScale(step.value));
 
 
                         // special case for what to do if zeroPos is not zero
                             if (zeroPos != 0) {
-                                console.log("special negative case 1...");
                                 end = Math.abs(zeroPos - xScale(step.value));
                                 start = (ignorant[2].pretax_end + zeroPos) - Math.abs(zeroPos - xScale(step.value));
                             }
 
                         //if the start of the prior total is less than the zero position, need another way to calculate
                             if (ignorant[2].pretax_start < zeroPos) {
-                                console.log("special negative case 2.....");
 
                                 //needs to start behind the value of pretax start if it's a negative
                                 start = ignorant[2].pretax_start - Math.abs(zeroPos - xScale(step.value));
@@ -1082,19 +1206,21 @@ var app = new Vue({
                 } else {
                     console.error("No known target for real update....")
                 }
-
             });
-        
         }, 
 
-        useLabel: function(label, y) {
+        useLabel: function(label, position) {
             this.label = label;
-            this.y = y;
+            this.position = position;
             this.showing = true;
         },
 
         unuseLabel: function() {
             this.showing = false;
+        },
+
+        toggleTable: function() {
+            this.tableVisible = !this.tableVisible;
         }
     }
 

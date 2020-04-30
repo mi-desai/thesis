@@ -1,99 +1,99 @@
 {
     "entity_name": "Cheniere Energy Inc",
     "ticker": "LNG",
-    "period": "12_31_2017",
+    "period": "12_31_2016",
     "scale": 1000000,
     "shares": [
-        ["Outstanding Shares", 254084493],
-        ["Basic EPS", 2.53],
-        ["Diluted EPS", 2.51],
-        ["Weighted Average Shares Outstanding", 256.2],
-        ["Diluted Weighted Average Shares Outstanding", 258.1]
+        {"component":["Outstanding Shares", 254084493]},
+        {"component":["Basic EPS", 2.53]},
+        {"component":["Diluted EPS", 2.51]},
+        {"component":["Weighted Average Shares Outstanding", 256.2]},
+        {"component":["Diluted Weighted Average Shares Outstanding", 258.1]}
     ],
     "balance_sheet": {
         "assets": {
             "current_assets": [
-                ["Cash and Cash Equivalents", 2474],
-                ["Restricted Cash", 520],
-                ["Accounts and other receivables", 491],
-                ["Inventory", 312],
-                ["Derivative Assets", 323],
-                ["Other Current Assets", 92]
+                {"component":["Cash and Cash Equivalents", 2474]},
+                {"component":["Restricted Cash", 520]},
+                {"component":["Accounts and other receivables", 491]},
+                {"component":["Inventory", 312]},
+                {"component":["Derivative Assets", 323]},
+                {"component":["Other Current Assets", 92]}
             ],
             "total_current_assets": 4212,
             "non_current_assets": [
-                ["Property Plant and Equipment, Net", 29673],
-                ["Non-current Derivative Assets", 174],
-                ["Goodwill", 77],
-                ["Deferred Tax Assets", 529],
-                ["Operating Lease Assets", 439],
-                ["Other non-current assets, net", 388]
+                {"component":["Property Plant and Equipment, Net", 29673]},
+                {"component":["Non-current Derivative Assets", 174]},
+                {"component":["Goodwill", 77]},
+                {"component":["Deferred Tax Assets", 529]},
+                {"component":["Operating Lease Assets", 439]},
+                {"component":["Other non-current assets, net", 388]}
             ],
             "total_non_current_assets": 31280,
             "total_assets": 35492
         },
         "liabilities": {
             "current_liabilities": [
-                ["Accounts Payable", 66],
-                ["Accrued Liabilities", 1281],
-                ["Current Debt", 0],
-                ["Deferred Revenue", 161],
-                ["Derivative Liabilities", 117],
-                ["Current Operating Lease Liabilities", 236],
-                ["Other Current Liabilites", 13]
+                {"component":["Accounts Payable", 66]},
+                {"component":["Accrued Liabilities", 1281]},
+                {"component":["Current Debt", 0]},
+                {"component":["Deferred Revenue", 161]},
+                {"component":["Derivative Liabilities", 117]},
+                {"component":["Current Operating Lease Liabilities", 236]},
+                {"component":["Other Current Liabilites", 13]}
             ],
             "total_current_liabilities": 1874,
             "non_current_liabilities": [
-                ["Long-term debt, net", 30774],
-                ["Non-current operating lease liabilities", 189],
-                ["Non-current finance lease liabilities", 58],
-                ["Non-current derivative liabilities", 151],
-                ["Other non-current liabilities", 11]
+                {"component":["Long-term debt, net", 30774]},
+                {"component":["Non-current operating lease liabilities", 189]},
+                {"component":["Non-current finance lease liabilities", 58]},
+                {"component":["Non-current derivative liabilities", 151]},
+                {"component":["Other non-current liabilities", 11]}
             ],
             "total_non_current_liabilities": 31189,
             "total_liabilities": 33057
         },
         "equity": {
             "stock": [
-                ["Common Stock", 1],
-                ["Treasury Stock", -674],
-                ["Additional Paid In Capital", 4167],
-                ["Retained Earnings", -3508]
+                {"component":["Common Stock", 1]},
+                {"component":["Treasury Stock", -674]},
+                {"component":["Additional Paid In Capital", 4167]},
+                {"component":["Retained Earnings", -3508]}
             ],
-            "preferred_stock": [["Preferred Stock", 0]],
+            "preferred_stock": [{"component":["Preferred Stock", 0]}],
             "minority_interest": 2449,
             "total_equity": 2435
         }
     },
     "income_statement": {
         "revenue": [
-            { "component": ["LNG Revenues", 0] },
+            { "component": ["LNG Revenues", 1016] },
             { "component": ["Regasification Revenues", 259] },
-            { "component": ["Other Revenues", 12] }
+            { "component": ["Other Revenues", 8] }
         ],
-        "total_revenue": 271,
+        "total_revenue": 1283,
         "operating_expenses": [
-            { "component": ["Operating and Maintenance Expense", 80] },
-            { "component": ["Development Expense", 42] },
-            { "component": ["Selling, General Administrative_expense", 363] },
-            { "component": ["Depreciation and Amortization Expense", 83] },
+            { "component": ["Cost of Sales", 582] },
+            { "component": ["Operating and Maintenance Expense", 216] },
+            { "component": ["Development Expense", 7] },
+            { "component": ["Selling, General Administrative_expense", 260] },
+            { "component": ["Depreciation and Amortization Expense", 174] },
             { "component": ["Restructuring Expense", 61] },
-            { "component": ["Impairment Expense and Loss on Disposal of Assets", 91] }
+            { "component": ["Impairment Expense and Loss on Disposal of Assets", 13] }
         ],
-        "total_operating_costs": -720,
-        "operating_income": -449,
+        "total_operating_costs": -1313,
+        "operating_income": -30,
         "other_income_expense": [
-            { "component": ["Interest Expense, net of capitalized interest", -322] },
-            { "component": ["Loss on modification or extinguishment of debt", -124] },
-            { "component": ["Derivative Gain (Loss), net", -204] },
-            { "component": ["Other income (expense)", 2] }
+            { "component": ["Interest Expense, net of capitalized interest", -488] },
+            { "component": ["Loss on modification or extinguishment of debt", -135] },
+            { "component": ["Derivative Gain (Loss), net", -10] }
         ],
-        "total_other_income_expense": -1097,
-        "pretax_income": -1097,
-        "total_tax_provision": 0,
-        "net_income_attributable_noncontrolling_interest": 122,
-        "net_income": -1097,
-        "net_income_post_minority_interest": -975
+        "total_other_income_expense": -633,
+        "pretax_income": -663,
+        "total_tax_provision": -2,
+        "net_income_attributable_noncontrolling_interest": 55,
+        "net_income": -665,
+        "net_income_post_minority_interest": -610
     },
     "cash_flow_statement": {
         "operating_cash_flows": {
