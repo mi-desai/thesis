@@ -7,7 +7,8 @@ rect {
 }
 
 rect:hover {
-    fill: orange;
+    stroke-width: 5px;
+    stroke: orange;
     transition: all 0.1s ease-in;
 }
 
@@ -15,18 +16,8 @@ rect:hover {
     fill: #E8AEB7;
 }
 
-.negative rect:hover {
-    fill: orange;
-    transition: all 0.1s ease-in;
-}
-
 .EBIT rect {
     fill: black;
-}
-
-.EBIT rect:hover {
-    fill: orange;
-    transition: all 0.1s ease-in;
 }
 
 .Pretax rect {
@@ -37,7 +28,24 @@ rect:hover {
     fill: black;
 }
 
+.initial {
+    opacity: 0;
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0
+    }
+    to {
+        opacity: 1
+    }
+}
+
+.final {
+    opacity: 1;
+    animation: fadein 4s; 
+}
+
 text {
-    font-family: monospace;
-    transition: all 0.5s ease-in-out 0.5s;
+    font-size: 1.3em;
 }

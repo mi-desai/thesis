@@ -36,75 +36,27 @@ Vue.component('bar', {
         }, 
 
         y2: function() {
-            return this.y + this.height + 20;
+            return this.y + this.height + 45;
         },
 
         dPath: function () {
-            firstPoints = [this.x1, this.y1];
-            secondPoints = [this.x2, this.y2];
+        
+            let data = [{x: this.x1, y: this.y1}, {x: this.x2, y: this.y2}]
 
-            return d3.line()
-                .x([1, 2])
-                .y([3, 4])
+            let line = d3.line()
+                .x(function(d) {return d.x})
+                .y(function(d) {return d.y});
+            
+            let result = line(data);
+        
+            return result;
         }
     },
     methods: {
-        breakout() {
-            console.log(this.components)
-            let svg = d3.select('svg');
-            svg.select('.breakout-data').remove();
-
-            let group = svg.append('g')
-                .attr('class', 'breakout-data')
-
-            const valuePos = 1;
-            const bars = [0];
-
-
-            for (let i = 0; i < this.components.length - 1; i++) {
-
-                let xPos = this.start + this.components[i][valuePos];
-
-                bars.push(this.components[i][valuePos]);
-
-                group.append('line')
-                    .attr('x1', xPos)
-                    .attr('x2', xPos)
-                    .attr('y1', this.y - 5)
-                    .attr('y2', this.y + this.height + 5)
-                    .style('stroke', "black")
-            }
-
-
-            bars.push(bars.reduce((a, v) => a + v) + this.components[this.components.length-1][valuePos]);
-            colors = ['yellow', 'green', 'red']
-
-            previousPosition = this.start;
-
-            for (let i = 0; i < this.components.length; i++) {
-                let width = bars[i+1] - bars[i];
-                let pair = group.append('g');
-
-                pair.append('rect')
-                    .attr('x', previousPosition)
-                    .attr('y', this.end)
-                    .attr('width', width)
-                    .attr('height', this.height)
-                    .style('opacity', 0)
-                    // .style('fill', colors[i])
-
-                pair.append('text')
-                        .attr('x', previousPosition + width/2 - 3)
-                        .attr('y', this.end + this.height/2)
-                        .attr('dy', 5)
-                        .html(width > 60 ? (100*width/bars[bars.length-1]).toFixed(1) + '%' : "&#x26AC;")
-
-                previousPosition += width;
-            }
-        }, 
+        breakout() {}, 
 
         mouseenter() {
-            this.$emit('showBar', this.label, [this.end + 10, this.y]);
+            this.$emit('showBar', this.label, [this.end + 300, this.y]);
         },
 
         mouseleave() {
@@ -112,12 +64,35 @@ Vue.component('bar', {
         }
 
     },
+    // template: `<g><rect @click="breakout" @mouseenter="mouseenter" @mouseleave="mouseleave" :class="type" :x="start" :y="y" 
+    // :width="end" :height="height"></rect>
+    // <text @mouseenter="mouseenter" @mouseleave="mouseleave" :x="end+start+10" :y="y+height/1.5"> {{account}} : {{value}} </text>
+    // <line v-if="label!=='NetIncome'" :x1="lineX" :x2="lineX" :y1="y+height" :y2="y+height+45" stroke="black"></line>
+    // </g>`
     template: `<g><rect @click="breakout" @mouseenter="mouseenter" @mouseleave="mouseleave" :class="type" :x="start" :y="y" 
     :width="end" :height="height"></rect>
-    <text :x="end+start+10" :y="y+height/1.5"> {{account}} : {{value}} </text>
-    <line :x1="lineX" :x2="lineX" :y1="y+height" :y2="y+height+20" stroke="black"></line>
-    </g>`
+    <text @mouseenter="mouseenter" @mouseleave="mouseleave" :x="end+start+10" :y="y+height/1.5"> {{account}} : {{value}} </text>
+    <path class="initial path" v-if="label!=='NetIncome'" :d="dPath" stroke="black" stroke-width="1"></path>
+    </g>`,
+    beforeUpdate: function () {
+
+        d3.select('.path')
+            .classed('initial', false)
+            .classed('final', true);
+            
+    }
 })
+
+Vue.component('lollipop', {
+    props: {
+        totals: Array,
+        label: String
+    }, 
+    template: ``,
+    computed: {},
+    methods: {}
+
+}) 
 
 //"Datatip is the tooltip for the bars"
 Vue.component('datatip', {
@@ -127,19 +102,70 @@ Vue.component('datatip', {
         showing: Boolean,
         position: Array
     },
-    template: `<div id="datatip" v-if="showing" :style="{top:position[1]+50, left: position[0] + 175}"> {{ totalOfInterest }}</div>`,
+    template: `<div id="datatip" v-if="showing" :style="{top:position[1] + 100, left: position[0] + 450}">
+
+    <h3> {{ totalOfInterest.account }} </h3>
+    <div v-if="checkRevenue" id="wrapper">This is revenue.</div>
+    <div v-else>This is expenses.</div>
+    
+    </div>`,
+    
     data: function () {
-        return {}
+        return {
+            tip_width: 400, 
+            tip_height: 200,
+            tip_margins: {right: 20, left: 20, top: 20, bottom: 20}
+        }
     },
     computed: {
         totalOfInterest: function() {
             return this.totals.find(
                 total => this.label === total.name
             );
-        }
+        }, 
+
+        width () {
+            return this.tip_width - this.tip_margins.left - this.tip_margins.right;
+        }, 
+
+        height () {
+            return this.tip_height - this.tip_margins.top - this.tip_margins.bottom;
+        },
+
+        check: function () {
+            return this.checkRevenue();
+        },
+
+        checkRevenue: function() {
+            if (this.totalOfInterest.name === "Revenue") {
+                return true;
+            } else {
+                return false;
+            }
     },
     methods: {
+        tooltip(data) {
+            console.log("this is being called....");
+            console.log(data);
+            const wrapper = d3.select('#wrapper')
+                .append('svg')
+                    .attr('width', tip_width)
+                    .attr('height', tip_height);
+            
+            const bounds = wrapper.append('g')
+                .style('transform',`translate(${tip_margins.left}px,
+                    ${tip_margins.top}px
+                )`);
+            
+            bounds.append('circle')
+                .attr('cx', 100)
+                .attr('cy', 50)
+                .attr('r', 25)
+                .style('fill', 'red');
+        },
+
         
+        }
     },
     mounted: function () {
             let style = document.createElement('link');
@@ -147,7 +173,12 @@ Vue.component('datatip', {
             style.rel = "stylesheet";
             style.href = 'datatip.css';
             document.head.appendChild(style)
-        }
+        },
+    // created () {
+    //     let tooltipviz = document.createElement('script');
+    //     tooltipviz.setAttribute('src', "tooltipviz.js");
+    //     document.body.appendChild(tooltipviz);
+    // }
     
 })
 
@@ -157,9 +188,41 @@ Vue.component('data-table', {
         company: Object,
         base: Object
     },
-    template: `<div id="dataTable"> {{ base }} </div>`,
+    template: `<div id="dataTable"> <table id="data-table">
+    <thead><tr>
+    <th> </th>
+    <th> {{ this.currentYear }}</th>
+    <th> {{ this.baseYear }}</th>
+    <th> % Change </th>
+    </tr></thead>
+    
+    <tbody>
+    <tr v-for="x in order">
+    <th class="metricName"> {{ x[1] }} </th>
+    <td>{{ present(metrics.current[x[0]], x[2]) }}</td>
+    <td>{{ present(metrics.base[x[0]], x[2]) }}</td>
+    <td>{{ present(100 * metrics.current[x[0]] / metrics.base[x[0]], 'wholeRnd') }}</td>
+    </tr>
+    
+    </tbody>
+
+    </table> </div>`,
     data: function () {
-        return {}
+        return {
+             order: [["gross_margin", "Gross Margin", '%rnd'],
+                ["operating_margin", "Operating Margin", '%rnd'],
+                ['pretax_margin', "Pretax Margin", '%rnd'],
+                ['net_profit_margin', "Net Profit Margin", '%rnd'],
+                ['revenue_growth', 'Revenue Growth', '%rnd'],
+                ['earnings_per_share', 'Earnings Per Share', 'twoDec'],
+                ['return_on_equity', 'Return on Equity', "wholeRnd"],
+                ['cash_and_cash_equivalents', 'Cash', 'wholeRnd'],
+                ['ebitda', 'EBITDA', 'wholeRnd'],
+                ['leverage', 'Leverage', 'twoDec'],
+                ['coverage', 'Coverage', 'twoDec'],
+                ['return_on_assets', 'Return on Assets', '%rnd']], 
+            nullval: " - "
+        }
     },
     computed: {
         currentYear: function() {
@@ -177,6 +240,32 @@ Vue.component('data-table', {
         }
     },
     methods: {
+        present: function(num, format) {
+
+            if (typeof num === "string") {
+                return num;
+            }
+
+            switch(format) {
+                case "%rnd":
+                    num = Math.round(num * 100) / 100;
+                break;
+
+                case "twoDec":
+                    num = Math.round(num * 100) / 100;
+                break;
+
+                case "wholeRnd": 
+                    num = Math.round(num);
+                break;
+            }
+
+            if (Number.isNaN(num)) {
+                return this.nullval;
+            }
+
+            return num;
+        },
         metricCalcs: function(current, base) {
             pl1 = current.income_statement;
             bs1 = current.balance_sheet;
@@ -186,20 +275,26 @@ Vue.component('data-table', {
             bs2 = base.balance_sheet;
             cfs2 = base.cash_flow_statement;
 
+
+            // return [
+            //     ['a', 3, 4],
+            //     ['b', 4, 5]
+            // ]
+
             let metrics = {
                 base: {
                     gross_margin: 0,
                     operating_margin: pl2.operating_income / pl2.total_revenue,
                     pretax_margin: pl2.pretax_income / pl2.total_revenue,
                     net_profit_margin: pl2.net_income / pl2.total_revenue,
-                    revenue_growth: ' - ',
-                    eps: 0,
-                    roe: pl2.net_income / bs2.equity.total_equity,
-                    cash: 0,
+                    revenue_growth: this.nullval,
+                    earnings_per_share: 0,
+                    return_on_equity: pl2.net_income / bs2.equity.total_equity,
+                    cash_and_cash_equivalents: 0,
                     ebitda: 0,
                     leverage: 0,
                     coverage: 0,
-                    roa: pl2.total_revenue / bs2.assets.total_assets
+                    return_on_assets: pl2.total_revenue / bs2.assets.total_assets
                 }, 
                 current: {
                     gross_margin: 0,
@@ -207,28 +302,28 @@ Vue.component('data-table', {
                     pretax_margin: pl1.pretax_income / pl1.total_revenue,
                     net_profit_margin: pl1.net_income / pl1.total_revenue,
                     revenue_growth: (pl1.total_revenue / pl2.total_revenue) - 1,
-                    eps: 0,
-                    roe: pl1.net_income / bs1.equity.total_equity,
-                    cash: 0,
+                    earnings_per_share: 0,
+                    return_on_equity: pl1.net_income / bs1.equity.total_equity,
+                    cash_and_cash_equivalents: 0,
                     ebitda: 0,
                     leverage: 0,
                     coverage: 0,
-                    roa: pl1.total_revenue / bs1.assets.total_assets
+                    return_on_assets: pl1.total_revenue / bs1.assets.total_assets
                 }
             };
 
             
-            //get eps
-            function getEPS(statement) {
-                let shares = statement.shares;
-                let eps;
-                for (let i = 0; i < shares.length; i++) {
-                    if (shares[i].includes("Diluted EPS")) {
-                        eps = shares[i][1];
-                    }
-                }
-                return eps;
-            }
+            // //get eps
+            // function getEPS(statement) {
+            //     let shares = statement.shares;
+            //     let eps;
+            //     for (let i = 0; i < shares.length; i++) {
+            //         if (shares[i].includes("Diluted EPS")) {
+            //             eps = shares[i][1];
+            //         }
+            //     }
+            //     return eps;
+            // }
 
             //get gross margin
             // function getCOGS(statement) {
@@ -257,10 +352,10 @@ Vue.component('data-table', {
 
 
             return metrics;
-        }
+        },
     },
         
-        
+    
     mounted: function () {
             let style = document.createElement('link');
             style.type = "text/css";
@@ -277,16 +372,18 @@ Vue.component('zero-line', {
     props: {
         x1: Number,
         x2: Number,
-        y2: Number
+        y2: Number,
+        label: String
     },
     data: function () {
         return { margin: { top: 50, left: 100, bottom: 50, right: 250 } }
     },
-    template: `<line :x1="x1" y1="0" :x2="x2" :y2="y2" stroke="black"></line>`
+    template: `<g><line class="zero" :x1="x1" y1="20" :x2="x2" :y2="y2" stroke="black"></line>
+    </g>`
 
 })
 
-//Income Statement - this will contain the the v-for that creates as many "total" components as needed 
+//Income Statement - this contains the the v-for that creates as many "total" components as needed 
 Vue.component('income-statement', {
     props: {
         totals: Array,
@@ -297,9 +394,9 @@ Vue.component('income-statement', {
     @hideBar="hideBar"
     :key="index"
     :start="total.bar.start"
-    :y="30+55*index"
+    :y="50+90*index"
     :end="total.bar.end"
-    :height="35"
+    :height="45"
     :label="total.name"
     :value="total.value"
     :class="total.class"
@@ -311,15 +408,17 @@ Vue.component('income-statement', {
     :x1="totals[0].bar.start"
     :y1="20"
     :x2="totals[0].bar.start"
-    :y2="this.svg_height - 5"
+    :y2="this.svg_height - 10"
+    :label="this.label"
     stroke="black"
     stroke-dasharray="4"
-    ></zero-line></g>`,
+    ></zero-line><text :x="totals[0].bar.start+3" :y="25">Zero</text></g>`,
     data: function () {
         return {
-            svg_width: 800,
+            svg_width: 900,
             margin: { top: 50, left: 100, bottom: 25, right: 250 },
-            svg_height: 460,
+            svg_height: 750,
+            label: 'Zero'
         }
     },
     computed: {
@@ -375,14 +474,24 @@ Vue.component('company-selector', {
 //this component emits an event that increases the current year by one
 Vue.component('next-button', {
     props: {
-        year: Number
+        company: Object
     },
-    template: `<button :year="year" v-on:click="incrementYear" 
+    template: `<button @click="incrementYear" 
     class="button" type="button">Next Year &#x2192;</button>`,
+    computed: {
+        currentYear: function() {
+            return +this.company.period.slice(-4);
+        }
+    },
     methods: {
-        incrementYear() {
-            console.log("Year incremented!!");
-            console.log(this.year);
+        incrementYear: function(event) {
+            currentYear = this.currentYear;
+            if (currentYear === 2019) {
+                console.log("no change emitted...");
+            } else {
+                currentYear++;
+                this.$emit('incrementyear', currentYear);
+            }
         },
 
         mounted: function () {
@@ -399,13 +508,29 @@ Vue.component('next-button', {
 //this component emits an event that decreases the current year by one
 Vue.component('previous-button', {
     props: {
-        year: Number
+        company: Object
     },
-    template: `<button :year="year" v-on:click="decrementYear" class="button"
+    template: `<button @click="decrementYear" class="button"
     type="button">&#x2190; Prior Year</button>`,
+    computed: {
+        currentYear: function() {
+            return +this.company.period.slice(-4);
+        }
+    },
     methods: {
-        decrementYear() {
-            console.log("Year decreased!!!")
+        decrementYear: function(event) {
+            currentYear = this.currentYear;
+            if (currentYear === 2015) {
+                console.log("no change emitted...");
+            } else {
+                currentYear--;
+                this.$emit('decrementyear', currentYear);
+
+                d3.select('.path')
+                    .classed('initial', true)
+                    .classed('final', false);
+
+            }
         }
     },
     mounted: function () {
@@ -434,17 +559,20 @@ Vue.component('top-menu', {
         style.href = 'top.css';
         document.head.appendChild(style)
     },
-    template: `<div id="top"><div id="logo"> <div class="column"><div class="maintitle">Visual Value</div><br> 
-    <div class="mainsub">Exploring Financial Statements</div></div></div>
-    <div class="company"><div class="column">{{ company.entity_name }} /
-    Ticker: {{company.ticker}} </div><br>
-    <div class="subtitle"> {{company.period.slice(-4)}} Income Statement </div></div></div>`
+    template: `<div id="top">
+        <div class="company">
+            <div class="column">
+                <div>{{ company.entity_name }} /Ticker: {{company.ticker}}</div> 
+                <div class="subtitle"> {{company.period.slice(-4)}} Income Statement </div>
+            </div>
+        </div>
+    </div>`
 })
 
 //this component emits the value of the checkboxes to enable or disable certain events
 Vue.component('options-menu', {
     props: {
-        totals: Array
+        
     },
     data: function () {
         return {}
@@ -461,12 +589,15 @@ Vue.component('options-menu', {
             this.$emit('toggletable');
         }
     },
-    template: `<div class="options">Toggle View:<br><br>
-    <label class="container">Comparison
+    computed: {
+    
+    },
+    template: `<div class="options">Toggle Functionality:<br><br>
+    <label class="container">Margins
         <input type="checkbox">
         <span class="checkmark"></span>
         </label><br>
-        <label class="container">Breakout
+        <label class="container">Annotate
         <input type="checkbox">
         <span class="checkmark"></span>
         </label><br>
@@ -484,25 +615,32 @@ Vue.component('options-menu', {
 //this allows for the base year to be set
 Vue.component('year-selectors', {
     props: {
-        
+        currentsel: Number, 
+        basesel: Number
     },
+
     template: `<div class="select">Select current year:<br> 
+
     <select @change="changeCurrentYear" id="current-year">
-        <option value="2019">2019</option>
-        <option value="2018">2018</option>
-        <option value="2017">2017</option>
-        <option value="2016">2016</option>
-        <option value="2015">2015</option>
+    <option v-for="year in current.years" :value="year" :selected="true"> {{ year }} </option>
         </select><br><br>Select base year:<br>
+        
         <select @change="changeBaseYear" id="base-year">
-        <option value="2019">2019</option>
-        <option value="2018">2018</option>
-        <option value="2017">2017</option>
-        <option value="2016">2016</option>
-        <option value="2015">2015</option>
+        <option v-for="year in base.years" :value="year"> {{ year }} </option>
         </select><br><br>
         </div>`,
-
+    data: function () {
+        return {
+            current: {
+                years: [2019, 2018, 2017, 2016, 2015],
+                selected: this.currentsel
+            },
+            base: {
+                years: [2019, 2018, 2017, 2016, 2015],
+                selected: this.basesel
+            }
+        }
+    },
     mounted: function () {
         let style = document.createElement('link');
         style.type = "text/css";
@@ -525,10 +663,10 @@ Vue.component('year-selectors', {
 var app = new Vue({
     el: '#finviz',
     data: {
-        title: "Finviz",
+        title: "Visual Value",
         svg_width: 900,
         margin: { top: 50, left: 50, bottom: 25, right: 500 },
-        svg_height: 550,
+        svg_height: 750,
         //right now this is what contains all the data being rendered, it has a default return in there already
         company: {
             "entity_name": "Cheniere Energy Inc",
@@ -681,12 +819,14 @@ var app = new Vue({
             }
         },
         //these will be the updated values that react to the interface selectioms
-        intervening: {},
         base: {},
         label: '',
         position: [],
         showing: false,
-        tableVisible: false
+        tableVisible: false,
+        zero: 'Zero',
+        currentsel: 2019,
+        basesel: 2018
     },
 
     //this sets the default styles for the page and might be where I put in default values for current and base
@@ -859,6 +999,7 @@ var app = new Vue({
                         }
 
                         //line connections, all it needs is the x position
+                        //for each connection, if the next connection is positive or negative, needs a case
                         step.connections.x1 = zeroPos + step.bar.end;
 
 
@@ -891,6 +1032,7 @@ var app = new Vue({
                             step.bar.start = xScale(start);
                             step.bar.end = xScale(end);
                             step.bar.range = xScale(end) - xScale(start);
+                            step.connections.x1 = zeroPos + step.bar.end;
                         }
                         
                         //if account is negative, start at the value
@@ -902,6 +1044,7 @@ var app = new Vue({
                             step.bar.start = xScale(start);
                             step.bar.end = xScale(end) - xScale(start);
                             step.bar.range = xScale(end) - xScale(start);
+                            step.connections.x1 = step.bar.start;
                         }
 
                         ignorant.push({
@@ -922,6 +1065,7 @@ var app = new Vue({
                             step.bar.start = xScale(start);
                             step.bar.end = xScale(end) - xScale(start);
                             step.bar.range = xScale(end) - xScale(start);
+                            step.connections.x1 = zeroPos + step.bar.end;
                         }
                         
                         //if account is negative, start at the value
@@ -933,6 +1077,7 @@ var app = new Vue({
                             step.bar.start = xScale(start)
                             step.bar.end = xScale(end) - xScale(start);
                             step.bar.range = xScale(end) - xScale(start);
+                            step.connections.x1 = step.bar.start;
                         }
 
                         ignorant.push({
@@ -999,6 +1144,7 @@ var app = new Vue({
                         step.bar.start = start;
                         step.bar.end = end;
                         step.bar.range = end - start;
+                        step.connections.x1 = step.bar.start;
 
                         //if the next bar's position is less than the zero position, the bar will draw incorrectly
                         //here, use the start of the next bar, instead of the end to compute the starting position
@@ -1011,6 +1157,7 @@ var app = new Vue({
                             step.bar.start = start;
                             step.bar.end = end;
                             step.bar.range = end - start;
+                            step.connections.x1 = step.bar.start;
                         }
 
                             //switching it back to original value
@@ -1035,11 +1182,13 @@ var app = new Vue({
                         if (checkNeg === 0) {
                             start = ignorant[1].ebit_end + zeroPos;
                             end = xScale(step.value);
+                            step.connections.x1 = start + end;
 
                             //if the next bar is less than the position of zero, need to start the current bar in a different place
                             if (ignorant[2].pretax_start < zeroPos) {
                                 start = ignorant[2].pretax_start;
                                 end = xScale(step.value) - zeroPos;
+                                step.connections.x1 = start + end;
                             }
                         }
 
@@ -1048,17 +1197,20 @@ var app = new Vue({
                         if (checkNeg != 0) {
                             start = ignorant[2].pretax_end + zeroPos;
                             end = xScale(step.value);
+                            step.connections.x1 = start;
 
                             //if the next bar is less than the position of zero, need to start the current bar in a different place
                             if (ignorant[2].pretax_start < zeroPos) {
                                 start = ignorant[2].pretax_start;
                                 end = xScale(step.value) - zeroPos;
+                                step.connections.x1 = start;
                             }
                         }
 
                         step.bar.start = start;
                         step.bar.end = end;
                         step.bar.range = end - start;
+
 
                         //conversion back to negative if changed to positive
                         if (checkNeg != 0) {
@@ -1082,10 +1234,13 @@ var app = new Vue({
                         if (checkNeg === 0) {
                             start = xScale(prior.value) + zeroPos;
                             end = xScale(step.value);
+                            step.connections.x1 = start + end;
 
                             //special case if the value of the account is 0, it shouldn't be scaled to the position of 0. 
                             if (step.value === 0) {
-                                end = 0;
+                                start = prior.bar.start;
+                                end = 0.25;
+                                step.connections.x1 = start + end;
                             }
 
                         }
@@ -1094,12 +1249,14 @@ var app = new Vue({
                         if (checkNeg != 0) {
                             start = ignorant[2].pretax_range - (xScale(step.value) + zeroPos);
                             end = Math.abs(zeroPos - xScale(step.value));
+                            step.connections.x1 = start;
 
 
                         // special case for what to do if zeroPos is not zero
                             if (zeroPos != 0) {
                                 end = Math.abs(zeroPos - xScale(step.value));
                                 start = (ignorant[2].pretax_end + zeroPos) - Math.abs(zeroPos - xScale(step.value));
+                                step.connections.x1 = start;
                             }
 
                         //if the start of the prior total is less than the zero position, need another way to calculate
@@ -1108,6 +1265,7 @@ var app = new Vue({
                                 //needs to start behind the value of pretax start if it's a negative
                                 start = ignorant[2].pretax_start - Math.abs(zeroPos - xScale(step.value));
                                 end = Math.abs(zeroPos - xScale(step.value));
+                                step.connections.x1 = start;
                             }
                             
                         }
@@ -1145,6 +1303,7 @@ var app = new Vue({
                             if (ignorant[3].ni_start < zeroPos) {
                                 end = xScale(step.value) - zeroPos;
                                 start = ignorant[3].ni_start - end;
+                                step.connections.x1 = start + end;
                             }
 
                         }
@@ -1154,11 +1313,13 @@ var app = new Vue({
                             //standard negative case where net income is positive at the end.
                             start = ignorant[3].ni_end + zeroPos;
                             end = zeroPos + xScale(step.value);
+                            step.connections.x1 = start;
 
                             //need another case for when net income is negative, since its starting and ending positions will be reversed
                             if (ignorant[3].ni_start < zeroPos) {
                                 start = ignorant[3].ni_start;
                                 end = xScale(step.value) - zeroPos;
+                                step.connections.x1 = start;
                             }
                         }
 
@@ -1220,7 +1381,24 @@ var app = new Vue({
         },
 
         toggleTable: function() {
-            this.tableVisible = !this.tableVisible;
+            if (Object.keys(this.base).length === 0) {
+                this.tableVisible = false;
+            } else {
+                this.tableVisible = !this.tableVisible;
+            }
+        }, 
+
+        handleNext: function(year) {
+            this.realUpdate(year, this.currentTicker, "company");
+        },
+
+        handlePrev: function(year) {
+            console.log("received", year);
+            
+            this.currentsel = year-1;
+
+            this.realUpdate(year, this.currentTicker, "company");
+
         }
     }
 

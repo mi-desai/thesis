@@ -7,7 +7,7 @@ body {
     display: flex;
     flex-direction: row;
     border-bottom: 2px solid #efefef;
-    margin-top: 10px;
+    margin-top: 7px;
 }
 
 .mainRow {
@@ -16,15 +16,17 @@ body {
     padding: 5px;
     padding-bottom: 2px;
     border-bottom: 2px solid #efefef;
+    justify-content: flex-start;
 }
 
 #nav {
     display: flex;
     flex-direction: column;
+    font-size: 1.3em;
     margin-left: 10px;
-    margin-top: 10px;
-    width: 250px;
-    height: 40vw;
+    margin-top: 15px;
+    width: 15vw;
+    height: 70vh;
     align-items: stretch;
     flex-basis: auto;
     overflow-y: auto;
@@ -35,7 +37,7 @@ body {
 }
 
 #main {
-    margin-left: 50px;
+    margin-left: 200px;
 }
 
 #firstNavRow {
@@ -61,10 +63,6 @@ body {
     padding: 10px;
     text-align: center;
     border-bottom: 2px solid #efefef;
-}
-
-#bottom {
-    text-align: center;
 }
 
 

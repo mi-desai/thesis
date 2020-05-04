@@ -7,47 +7,37 @@
 <body>
     <div id="finviz">
 
-        <div id="top">
-            <top-menu :company="company"></top-menu>
-        </div>
+        <top-menu :company="company"></top-menu>
 
         <div class="mainRow">
 
             <div id=nav>
-            
                 <div id="firstNavRow">
                     <company-selector @companychange="updateCompany"></company-selector>
                     
                 </div>
                 <div id="secondNavRow">
-                    <year-selectors @currentyearchange="getNewCurrent" @baseyearchange="getNewBase"></year-selectors>
+                    <year-selectors :currentsel="currentsel" :basesel="basesel" @currentyearchange="getNewCurrent" @baseyearchange="getNewBase"></year-selectors>
                 </div>
                 <div id="thirdNavRow">
-                    <previous-button></previous-button>
-                    <next-button></next-button>
+                    <previous-button :company="company" @decrementyear="handlePrev"></previous-button>
+                    <next-button :company="company" @incrementyear="handleNext"></next-button>
                 </div>
                 <div id="fourthNavRow">
-                    <options-menu @toggletable="toggleTable"></options-menu>
-                </div>
-                <div id="fifthNavRow">
-                    <br>Metric Builder goes Here.<br>
+                    <options-menu @toggletable="toggleTable" :base="base"></options-menu>
                 </div>
             </div>
-            <br>
 
             <div id=main>
                 <svg :height="svg_height" :width="svg_width">
                     <income-statement :totals="totals" @showbar="useLabel" @hidebar="unuseLabel"></income-statement>
-                    
                 </svg>
                 <datatip :showing="showing" :totals="totals" :label="label" :position="position"></datatip>
             </div>
-        </div>
 
-        
-        <div id="right">
-            <h1 v-if="tableVisible"> Hellloooooo? </h1>
-            <data-table :company="company" :base="base" v-if="tableVisible"></data-table>
+            <div id="table">
+                <data-table :company="company" :base="base" v-if="tableVisible"></data-table>
+            </div>
         </div>
 
 
