@@ -85,12 +85,70 @@ Vue.component('bar', {
 
 Vue.component('lollipop', {
     props: {
-        totals: Array,
-        label: String
+        total: Object
     }, 
-    template: ``,
-    computed: {},
-    methods: {}
+    template: `<div id="wrapper">
+    <svg :width="tip_width" :height="tip_height">
+
+        <line></line>
+        <circle></circle>
+        <text></text>
+        <text></text>
+        <text></text>
+
+        <line></line>
+
+    </svg>
+    </div>`,
+
+    data: function () {
+        return {
+            tip_width: 500, 
+            tip_height: 300,
+            tip_margins: {right: 50, left: 50, top: 10, bottom: 10}
+        }
+    },
+    computed: {
+        width () {
+            return this.tip_width - this.tip_margins.left - this.tip_margins.right;
+        }, 
+
+        height () {
+            return this.tip_height - this.tip_margins.top - this.tip_margins.bottom;
+        },
+
+        subtotals () {
+            return this.total.components;
+        },
+
+        scales () {
+            let subtotals = this.subtotals;
+
+            let labels = [];
+            let values = [];
+            
+            for (let i = 0; i < subtotals.length; i++) {
+                labels.push(subtotals[i][0]);
+
+                if (Math.sign(subtotals[i][2]) === -1) {
+                    subtotals[i][2] *= -1;
+                }
+                
+                values.push(subtotals[i][2]);
+            }
+
+            const xScale = d3.scaleLinear().domain(d3.extent(values)).nice().range([0, this.width]);
+
+            const yScale = d3.scaleBand().domain(labels).rangeRound([this.height, 0]);
+
+            return {xScale, yScale};
+        }
+        
+    },
+    methods: {
+
+
+    }
 
 }) 
 
@@ -102,11 +160,46 @@ Vue.component('datatip', {
         showing: Boolean,
         position: Array
     },
-    template: `<div id="datatip" v-if="showing" :style="{top:position[1] + 100, left: position[0] + 450}">
+    //put back in v-if="showing" when ready
+    template: `<div id="datatip" :style="{top:position[1] + 100, left: position[0] + 450}">
 
     <h3> {{ totalOfInterest.account }} </h3>
-    <div v-if="checkRevenue" id="wrapper">This is revenue.</div>
-    <div v-else>This is expenses.</div>
+
+    <div v-if="checkRevenue" class="subviz">
+    <lollipop :total="totalOfInterest"></lollipop>
+    </div>
+
+    <div v-else-if="checkExp" class="subviz">
+    This is operating expenses.
+    </div>
+
+    <div v-else-if="checkEBIT" class="subviz">
+    This is operating profit.
+    </div>
+
+    <div v-else-if="checkOther" class="subviz">
+    This is other income or expense.
+    </div>
+
+    <div v-else-if="checkPretax" class="subviz">
+    This is pretax income.
+    </div>
+
+    <div v-else-if="checkTax" class="subviz">
+    This is taxes.
+    </div>
+
+    <div v-else-if="checkMinInt" class="subviz">
+    This is minority interest.
+    </div>
+
+    <div v-else-if="checkNetIncome" class="subviz">
+    This is Net Income.
+    </div>
+
+    <div v-else>
+    This is something else.
+    </div>
     
     </div>`,
     
@@ -124,14 +217,6 @@ Vue.component('datatip', {
             );
         }, 
 
-        width () {
-            return this.tip_width - this.tip_margins.left - this.tip_margins.right;
-        }, 
-
-        height () {
-            return this.tip_height - this.tip_margins.top - this.tip_margins.bottom;
-        },
-
         check: function () {
             return this.checkRevenue();
         },
@@ -142,43 +227,73 @@ Vue.component('datatip', {
             } else {
                 return false;
             }
-    },
-    methods: {
-        tooltip(data) {
-            console.log("this is being called....");
-            console.log(data);
-            const wrapper = d3.select('#wrapper')
-                .append('svg')
-                    .attr('width', tip_width)
-                    .attr('height', tip_height);
-            
-            const bounds = wrapper.append('g')
-                .style('transform',`translate(${tip_margins.left}px,
-                    ${tip_margins.top}px
-                )`);
-            
-            bounds.append('circle')
-                .attr('cx', 100)
-                .attr('cy', 50)
-                .attr('r', 25)
-                .style('fill', 'red');
         },
 
-        
+        checkExp: function() {
+            if (this.totalOfInterest.name === "OpEx") {
+                return true;
+            } else {
+                return false;
+            }
+        },
+
+        checkEBIT: function() {
+            if (this.totalOfInterest.name === "EBIT") {
+                return true;
+            } else {
+                return false;
+            }
+        }, 
+
+        checkOther: function() {
+            if (this.totalOfInterest.name === "Other") {
+                return true;
+            } else {
+                return false;
+            }
+        },
+
+        checkPretax: function() {
+            if(this.totalOfInterest.name === "Pretax") {
+                return true;
+            } else {
+                return false;
+            }
+        },
+
+        checkTax: function() {
+            if(this.totalOfInterest.name === "Taxes") {
+                return true;
+            } else {
+                return false;
+            }
+        },
+
+        checkMinInt: function() {
+            if (this.totalOfInterest.name === "MinInt") {
+                return true;
+            } else {
+                return false;
+            }
+        }, 
+
+        checkNetIncome: function() {
+            if (this.totalOfInterest.name === "NetIncome") {
+                return true;
+            } else {
+                return false;
+            }
         }
+
     },
+
     mounted: function () {
             let style = document.createElement('link');
             style.type = "text/css";
             style.rel = "stylesheet";
             style.href = 'datatip.css';
             document.head.appendChild(style)
-        },
-    // created () {
-    //     let tooltipviz = document.createElement('script');
-    //     tooltipviz.setAttribute('src', "tooltipviz.js");
-    //     document.body.appendChild(tooltipviz);
-    // }
+        }
     
 })
 
@@ -1146,6 +1261,15 @@ var app = new Vue({
                         step.bar.range = end - start;
                         step.connections.x1 = step.bar.start;
 
+                        //getting components out
+                        step.components = this.company.income_statement.operating_expenses.map(
+                            component => [...component.component]
+                        );
+
+                        step.components = step.components.map(
+                            subtotals => [subtotals[0], xScale(subtotals[1]), subtotals[1]]
+                        );
+
                         //if the next bar's position is less than the zero position, the bar will draw incorrectly
                         //here, use the start of the next bar, instead of the end to compute the starting position
                         //the end is just the value, with no adjustment from zero
@@ -1168,6 +1292,14 @@ var app = new Vue({
                     break;
 
                     case "Other": 
+
+                        step.components = this.company.income_statement.other_income_expense.map(
+                            component => [...component.component]
+                        );
+
+                        step.components = step.components.map(
+                            subtotals => [subtotals[0], xScale(subtotals[1]), subtotals[1]]
+                        );
                         
                         //conversion to positive if negative for calculation of rect positions
                         checkNeg = 0;

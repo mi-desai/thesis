@@ -3,9 +3,9 @@
     right: 20px;
     z-index: 100;
     top: 110px;
-    width: 350px;
+    width: 500px;
     background-color: white;
-    border: 2px solid black;
+    border: 2px solid #efefef;
 }
 
 #Revenue {
