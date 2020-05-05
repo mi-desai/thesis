@@ -64,23 +64,11 @@ Vue.component('bar', {
         }
 
     },
-    // template: `<g><rect @click="breakout" @mouseenter="mouseenter" @mouseleave="mouseleave" :class="type" :x="start" :y="y" 
-    // :width="end" :height="height"></rect>
-    // <text @mouseenter="mouseenter" @mouseleave="mouseleave" :x="end+start+10" :y="y+height/1.5"> {{account}} : {{value}} </text>
-    // <line v-if="label!=='NetIncome'" :x1="lineX" :x2="lineX" :y1="y+height" :y2="y+height+45" stroke="black"></line>
-    // </g>`
     template: `<g><rect @click="breakout" @mouseenter="mouseenter" @mouseleave="mouseleave" :class="type" :x="start" :y="y" 
     :width="end" :height="height"></rect>
     <text @mouseenter="mouseenter" @mouseleave="mouseleave" :x="end+start+10" :y="y+height/1.5"> {{account}} : {{value}} </text>
-    <path class="initial path" v-if="label!=='NetIncome'" :d="dPath" stroke="black" stroke-width="1"></path>
+    <path v-if="label!=='NetIncome'" :d="dPath" stroke="black" stroke-width="1"></path>
     </g>`,
-    beforeUpdate: function () {
-
-        d3.select('.path')
-            .classed('initial', false)
-            .classed('final', true);
-            
-    }
 })
 
 Vue.component('lollipop', {
@@ -90,13 +78,9 @@ Vue.component('lollipop', {
     template: `<div id="wrapper">
     <svg :width="tip_width" :height="tip_height">
 
-        <line></line>
-        <circle></circle>
-        <text></text>
-        <text></text>
-        <text></text>
+        <line v-for="{x, y} in scaledTotals" x1="25" :y1="y" :x2="x+25" :y2="y" stroke="black" stroke-width="2px"></line>
 
-        <line></line>
+        <circle></circle>
 
     </svg>
     </div>`,
@@ -133,7 +117,7 @@ Vue.component('lollipop', {
                 if (Math.sign(subtotals[i][2]) === -1) {
                     subtotals[i][2] *= -1;
                 }
-                
+
                 values.push(subtotals[i][2]);
             }
 
@@ -142,6 +126,21 @@ Vue.component('lollipop', {
             const yScale = d3.scaleBand().domain(labels).rangeRound([this.height, 0]);
 
             return {xScale, yScale};
+        },
+
+        scaledTotals () {
+
+            let scaled = [];
+
+            for (let i = 0; i < this.subtotals.length; i++) {
+                let compScaled = {
+                    x: this.scales.xScale(this.subtotals[i][2]),
+                    y: this.scales.yScale(this.subtotals[i][0])
+                };
+                scaled.push(compScaled);
+            }
+
+            return scaled;
         }
         
     },
@@ -160,7 +159,8 @@ Vue.component('datatip', {
         showing: Boolean,
         position: Array
     },
-    //put back in v-if="showing" when ready
+
+    //put back in v-if="showing" when ready // IMPORTANT IMPORTANT 
     template: `<div id="datatip" :style="{top:position[1] + 100, left: position[0] + 450}">
 
     <h3> {{ totalOfInterest.account }} </h3>
@@ -390,12 +390,6 @@ Vue.component('data-table', {
             bs2 = base.balance_sheet;
             cfs2 = base.cash_flow_statement;
 
-
-            // return [
-            //     ['a', 3, 4],
-            //     ['b', 4, 5]
-            // ]
-
             let metrics = {
                 base: {
                     gross_margin: 0,
@@ -461,11 +455,6 @@ Vue.component('data-table', {
             //get leverage
             //get coverage
 
-
-            
-
-
-
             return metrics;
         },
     },
@@ -493,8 +482,42 @@ Vue.component('zero-line', {
     data: function () {
         return { margin: { top: 50, left: 100, bottom: 50, right: 250 } }
     },
-    template: `<g><line class="zero" :x1="x1" y1="20" :x2="x2" :y2="y2" stroke="black"></line>
-    </g>`
+    computed: {
+        xPos1: function() {
+            return this.x1;
+        }, 
+
+        xPos2: function() {
+            return this.x2;
+        },
+
+        yPos1: function() {
+            return 20;
+        },
+
+        yPos2: function() {
+            return this.y2;
+        },
+
+        dPath: function () {
+        
+            let data = [{x: this.xPos1, y: this.yPos1}, {x: this.xPos2, y: this.yPos2}]
+
+            let line = d3.line()
+                .x(function(d) {return d.x})
+                .y(function(d) {return d.y});
+            
+            let result = line(data);
+        
+            return result;
+        }
+    },
+    template: `<g><path class="zero" :d="dPath" stroke="black"
+    stroke-dasharray="4"></path></g>`
+    
+    // `<g><line class="zero" :x1="x1" y1="20" :x2="x2" :y2="y2" stroke="black" stroke="black"
+    // stroke-dasharray="4"></line>
+    // </g>`
 
 })
 
@@ -525,8 +548,6 @@ Vue.component('income-statement', {
     :x2="totals[0].bar.start"
     :y2="this.svg_height - 10"
     :label="this.label"
-    stroke="black"
-    stroke-dasharray="4"
     ></zero-line><text :x="totals[0].bar.start+3" :y="25">Zero</text></g>`,
     data: function () {
         return {
@@ -640,11 +661,6 @@ Vue.component('previous-button', {
             } else {
                 currentYear--;
                 this.$emit('decrementyear', currentYear);
-
-                d3.select('.path')
-                    .classed('initial', true)
-                    .classed('final', false);
-
             }
         }
     },
@@ -731,29 +747,34 @@ Vue.component('options-menu', {
 Vue.component('year-selectors', {
     props: {
         currentsel: Number, 
-        basesel: Number
+        basesel: null
     },
 
     template: `<div class="select">Select current year:<br> 
 
-    <select @change="changeCurrentYear" id="current-year">
+    <select @change="changeCurrentYear" id="current-year" v-model="currentsel">
     <option v-for="year in current.years" :value="year" :selected="true"> {{ year }} </option>
         </select><br><br>Select base year:<br>
         
-        <select @change="changeBaseYear" id="base-year">
-        <option v-for="year in base.years" :value="year"> {{ year }} </option>
+        <select @change="changeBaseYear" id="base-year" v-model="basesel">
+        <option> Select a base year. </option>
+        <option v-for="year in comparison" :value="year"> {{ year }} </option>
         </select><br><br>
         </div>`,
+
     data: function () {
         return {
             current: {
-                years: [2019, 2018, 2017, 2016, 2015],
-                selected: this.currentsel
+                years: [2019, 2018, 2017, 2016, 2015]
             },
             base: {
-                years: [2019, 2018, 2017, 2016, 2015],
-                selected: this.basesel
+                years: this.comparison
             }
+        }
+    },
+    computed: {
+        comparison: function () {
+            return this.current.years.filter(yr => yr < this.currentsel);
         }
     },
     mounted: function () {
@@ -765,11 +786,11 @@ Vue.component('year-selectors', {
     }, 
     methods: {
         changeCurrentYear: function (event) {
-            this.$emit('currentyearchange', event.target.value);
+            this.$emit('currentyearchange', +event.target.value);
         }, 
         
         changeBaseYear: function(event) {
-            this.$emit('baseyearchange', event.target.value);
+            this.$emit('baseyearchange', +event.target.value);
         }
     }
 })
@@ -941,7 +962,7 @@ var app = new Vue({
         tableVisible: false,
         zero: 'Zero',
         currentsel: 2019,
-        basesel: 2018
+        basesel: 'Select a base year.'
     },
 
     //this sets the default styles for the page and might be where I put in default values for current and base
@@ -1125,7 +1146,7 @@ var app = new Vue({
 
                         step.components = step.components.map(
                             subtotals => [subtotals[0], xScale(subtotals[1]), subtotals[1]]
-                        );
+                        ).sort(this.arrangeComponents);
 
                         //push the total to a structure called ignorant to assist with other rect calcs
                         ignorant.push({
@@ -1268,7 +1289,7 @@ var app = new Vue({
 
                         step.components = step.components.map(
                             subtotals => [subtotals[0], xScale(subtotals[1]), subtotals[1]]
-                        );
+                        ).sort(this.arrangeComponents);
 
                         //if the next bar's position is less than the zero position, the bar will draw incorrectly
                         //here, use the start of the next bar, instead of the end to compute the starting position
@@ -1489,6 +1510,16 @@ var app = new Vue({
         //this reloads the data used in the root Vue instance and passes it again to all components.
         realUpdate: function (year, ticker, target) {
 
+            if (typeof year == 'string') {
+                throw error('year is a string....');
+            }
+
+            if (target === "company") {
+                this.currentsel = year;
+            } else {
+                this.basesel = year;
+            }
+    
             console.log('Get New Company and Years: ', ticker, year);
             d3.json(`data/${ticker}${year}.json`).then((response) => {
 
@@ -1526,11 +1557,13 @@ var app = new Vue({
 
         handlePrev: function(year) {
             console.log("received", year);
-            
-            this.currentsel = year-1;
 
             this.realUpdate(year, this.currentTicker, "company");
 
+        },
+
+        arrangeComponents: function(a, b) {
+            return Math.abs(a[2]) - Math.abs(b[2]);
         }
     }
 

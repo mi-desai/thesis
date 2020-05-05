@@ -1,9 +1,8 @@
 #data-table {
     border-collapse: collapse;
-    width: 20vw;
-    height: 390px;
+    width: 25vw;
     overflow-y: auto;
-    padding: 5px;
+    padding: 3px;
     font-size: 1.2em;
 }
 
@@ -16,22 +15,36 @@
 
 thead {
     font-size: 1.1em;
-    padding: 25px;
+    padding: 20px;
 }
 
 #dataTable {
-    padding-top: 15px;
+    padding-top: 2px;
     overflow-y: auto;
-    height: 40vw;
-    margin-left: 50px;
+    height: 20vw;
+    margin-left: 5px;
 }
 
 #data-table th {
-    padding-top: 20px;
+    padding-top: 10px;
     padding-bottom: 20px;
     text-align: left;
 }
 
 #dataTable::-webkit-scrollbar {
     display:none;
+}
+
+.slide-enter-active {
+    transition: all 3.0s ease;
+}
+
+.slide-leave-active {
+    transition: all 3.0s ease;
+}
+
+.slide-enter, .slide-leave-to {
+    transform: translateX(200px);
+    transform: translateY(500px);
+    opacity: 0;
 }

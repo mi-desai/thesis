@@ -36,7 +36,9 @@
             </div>
 
             <div id="table">
-                <data-table :company="company" :base="base" v-if="tableVisible"></data-table>
+                <transition name="slide">
+                    <data-table :company="company" :base="base" v-if="tableVisible"></data-table>
+                </transition>
             </div>
         </div>
 

@@ -1,51 +1,69 @@
 
+rect, path {
+    fill: #4393c3;
+    opacity: 0.7;
+    transition: 0.3s ease-in-out 0.3s;
+}
+
 rect {
-    fill: teal;
-    opacity: 0.6;
-    stroke: black;
-    transition: all 0.5s ease-in-out 0.5s;
+    stroke: #4393c3;
 }
 
 rect:hover {
-    stroke-width: 5px;
-    stroke: orange;
+    stroke-width: 6px;
+    stroke: black;
     transition: all 0.1s ease-in;
 }
 
 .negative rect {
-    fill: #E8AEB7;
+    fill: #d6604d;
+    stroke: #d6604d;
+}
+
+.negative rect:hover {
+    stroke-width: 6px;
+    stroke: black;
+    transition: all 0.1s ease-in;
 }
 
 .EBIT rect {
-    fill: black;
+    fill: #C0C0C0;
+    stroke: #C0C0C0;
+}
+
+.EBIT rect:hover {
+    stroke-width: 6px;
+    stroke: black;
+    transition: all 0.1s ease-in;
 }
 
 .Pretax rect {
-    fill: black;
+    fill: #C0C0C0;
+    stroke: #C0C0C0;
+}
+
+.Pretax rect:hover {
+    stroke-width: 6px;
+    stroke: black;
+    transition: all 0.1s ease-in;
 }
 
 .NetIncome rect {
-    fill: black;
+    fill: #C0C0C0;
+    stroke: #C0C0C0;
 }
 
-.initial {
-    opacity: 0;
+.NetIncome rect:hover {
+    stroke-width: 6px;
+    stroke: black;
+    transition: all 0.1s ease-in;
 }
 
-@keyframes fadein {
-    from {
-        opacity: 0
-    }
-    to {
-        opacity: 1
-    }
-}
-
-.final {
-    opacity: 1;
-    animation: fadein 4s; 
+.zero {
+    stroke-width: 2px;
 }
 
 text {
     font-size: 1.3em;
+    transition: 0.3s ease-in-out 0.3s;
 }
