@@ -36,11 +36,11 @@ thead {
 }
 
 .slide-enter-active {
-    transition: all 3.0s ease;
+    transition: all 0.4s ease;
 }
 
 .slide-leave-active {
-    transition: all 3.0s ease;
+    transition: all 0.4s ease;
 }
 
 .slide-enter, .slide-leave-to {

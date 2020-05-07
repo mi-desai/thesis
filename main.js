@@ -1,4 +1,19 @@
 const DEBUG = true;
+let summary;
+
+d3.json('data/summary.json').then(response => {
+    summary = response;
+})
+
+const translator = {
+    "EBIT": "operating_income",
+    "Other": "other_income_expense",
+    "Pretax": "pretax_income",
+    "Taxes": "taxes",
+    "MinInt": "minority_interest",
+    "NetIncome": "net_income",
+    "NetIncomeMI": "net_income_post_minority_interest"
+}
 
 //"Bar" components are the rectangles
 Vue.component('bar', {
@@ -78,21 +93,28 @@ Vue.component('lollipop', {
     template: `<div id="wrapper">
     <svg :width="tip_width" :height="tip_height">
 
-        <line v-for="{x, y} in scaledTotals" x1="25" :y1="y" :x2="x+25" :y2="y" stroke="black" stroke-width="2px"></line>
+        
+        <path v-for="index in paths" :d="index" stroke="black" stroke-width="3px"></path>
 
-        <circle></circle>
+        <g><circle class="lollipop" v-for="{x, y} in scaledTotals" :cx="x+25" :cy="y+40" r="8" stroke="black" stroke-width="4px"></circle></g>
 
+        <g><text class="lollipop" v-for="{x, y, name, value} in scaledTotals" :x="x+40" :y="y+40"> {{ name }}: {{value}} </text></g>
+        <g><text class="lollipop" v-for="{x, y, name, value} in scaledTotals" :x="x+40" :y="y+55"> {{ Math.round(((value * 100) / sumTotal)) }}% </text></g>
+
+        <g><line class="axis" :x1="axis.x1" :x2="axis.x2" :y1="axis.y1" :y2="axis.y2" stroke="black" stroke-width="1px"></line></g>
+        
     </svg>
     </div>`,
 
     data: function () {
         return {
-            tip_width: 500, 
-            tip_height: 300,
-            tip_margins: {right: 50, left: 50, top: 10, bottom: 10}
+            tip_width: 800, 
+            tip_height: 500,
+            tip_margins: {right: 550, left: 50, top: 50, bottom: 10}
         }
     },
     computed: {
+
         width () {
             return this.tip_width - this.tip_margins.left - this.tip_margins.right;
         }, 
@@ -128,6 +150,14 @@ Vue.component('lollipop', {
             return {xScale, yScale};
         },
 
+        sumTotal() {
+            let sum = 0;
+            for (let i = 0; i < this.subtotals.length; i++) {
+                sum += this.subtotals[i][2];
+            }
+            return sum;
+        },
+
         scaledTotals () {
 
             let scaled = [];
@@ -135,21 +165,302 @@ Vue.component('lollipop', {
             for (let i = 0; i < this.subtotals.length; i++) {
                 let compScaled = {
                     x: this.scales.xScale(this.subtotals[i][2]),
-                    y: this.scales.yScale(this.subtotals[i][0])
+                    y: this.scales.yScale(this.subtotals[i][0]),
+                    name: this.subtotals[i][0],
+                    value: this.subtotals[i][2]
                 };
                 scaled.push(compScaled);
             }
 
             return scaled;
+        },
+
+        axis () {
+            let result = {
+                x1: this.scales.xScale(0) + 25,
+                x2: this.scales.xScale(0) + 25,
+                y1: 10,
+                y2: this.height
+            };
+
+            return result;
+
+        }, 
+
+        paths: function () {
+        
+            let paths = [];
+            let data = [];
+            let result = [];
+
+            for (let i = 0; i < this.scaledTotals.length; i++) {
+                let iter = [
+                    {x: 25, y: this.scaledTotals[i].y+40},
+                    {x: this.scaledTotals[i].x+25, y:this.scaledTotals[i].y+40}
+                ]
+
+                data.push(iter);
+            }
+
+            console.log(data);
+
+            let line = d3.line()
+                .x(function(d) {return d.x})
+                .y(function(d) {return d.y});
+
+            for (let i = 0; i < data.length; i++) {
+                let path = line(data[i]);
+                paths.push(path);
+            }
+            
+            console.log(paths);
+        
+            return paths;
         }
         
     },
     methods: {
 
+        round: function(value) {
+        }
 
+    }, 
+
+    mounted: function () {
+        let style = document.createElement('link');
+        style.type = "text/css";
+        style.rel = "stylesheet";
+        style.href = 'lollipop.css';
+        document.head.appendChild(style)
     }
 
-}) 
+})
+
+Vue.component('line-chart', {
+    props: {
+        total: Object
+    },
+
+    template: `<div id="wrapper">
+    <svg :width="tip_width" :height="tip_height">
+
+        <path :d="xAxisPath" stroke="black" stroke-width="1px"></path>
+
+        <path :d="dPath" stroke="black" stroke-width="3px"></path>
+
+        <circle :cx="circleX" :cy="circleY" r="20" stroke-width="2px" stroke-dasharray="5,5" stroke="blue" fill="none"></circle>
+
+        <text></text>
+
+        <path :d="yAxisPath" stroke="black" stroke-width="1px"></path>
+
+    </svg>
+    </div>`,
+
+    data: function() {
+        return {
+            tip_width: 500, 
+            tip_height: 300,
+            tip_margins: {right: 50, left: 50, top: 75, bottom: 25},
+            year_range: [2015, 2019],
+            info: []
+        }
+    },
+
+    computed: {
+        width () {
+            return this.tip_width - this.tip_margins.left - this.tip_margins.right;
+        }, 
+
+        height () {
+            return this.tip_height - this.tip_margins.top - this.tip_margins.bottom;
+        }, 
+
+        values () {
+            return this.getData();
+        },
+
+        scales () {
+
+        let values = this.values; 
+
+        let range = this.year_range;
+
+        const xScale = d3.scaleLinear().domain(d3.extent(range)).nice().range([0, this.width]);
+
+        const yScale = d3.scaleLinear().domain(d3.extent(values)).rangeRound([this.height, 0]);
+
+        return {xScale, yScale}
+
+        },
+
+        scaledValues () {
+            let values = this.values;
+            let range = [2015, 2016, 2017, 2018, 2019];
+            let scaled = [];
+
+            const xConst = 30;
+            const yConst = 20;
+            
+            for (let i = 0; i < values.length; i++) {
+                let myScaled = {
+                    x: this.scales.xScale(range[i]) + xConst,
+                    y: this.scales.yScale(values[i]) + yConst,
+                    name: this.total.account,
+                    year: this.total.year - i
+                };
+                scaled.push(myScaled);
+            }
+
+            return scaled;
+        },
+
+        dPath () {
+            let data = this.scaledValues;
+
+            let line = d3.line()
+                .x(function(d) {return d.x})
+                .y(function(d) {return d.y});
+            
+            let result = line(data);
+
+            return result;
+        },
+
+        xAxis () {
+            let range = [2015, 2016, 2017, 2018, 2019];
+
+            let result = [ 
+                {x: this.scales.xScale(range[0]) + 22, y: this.scales.yScale(0) },
+                {x: this.width + 22, y: this.scales.yScale(0) }
+            ];
+
+            return result;
+        },
+
+        xAxisPath () {
+            let data = this.xAxis;
+
+            let line = d3.line()
+                .x(function(d) {return d.x})
+                .y(function(d) {return d.y});
+
+            let result = line(data);
+
+            return result;
+        },
+
+        yAxis () {
+            let values = this.values;
+
+            let result = [
+                {x: 22, y: this.scales.xScale(values[0])},
+                {x: 22, y: this.height + 20}
+            ];
+
+            return result;
+        },
+
+        yAxisPath () {
+            let data = this.yAxis;
+
+            let line = d3.line()
+                .x(function(d) {return d.x})
+                .y(function(d) {return d.y});
+
+            let result = line(data);
+
+            return result;
+        }, 
+
+        circleX () {
+
+            let values = this.scaledValues;
+            let range = [2015, 2016, 2017, 2018, 2019];
+            
+            let result = 0;
+
+            let myArray = [];
+
+            for (let i = 0; i < values.length; i++) {
+                let pos = {
+                    year: range[i],
+                    value: values[i]
+                }
+                myArray.push(pos);
+            }
+
+            for (let i = 0; i < myArray.length; i++) {
+                if (myArray[i].year === this.year) {
+                    result = myArray[i].value.x;
+                }
+            }
+
+            return result;
+        },
+
+        circleY () {
+
+            let values = this.scaledValues;
+            let range = [2015, 2016, 2017, 2018, 2019];
+            let result = 0;
+
+            let myArray = [];
+
+            for (let i = 0; i < values.length; i++) {
+                let pos = {
+                    year: range[i],
+                    value: values[i]
+                }
+                myArray.push(pos);
+            }
+
+            for (let i = 0; i < myArray.length; i++) {
+                if (myArray[i].year === this.year) {
+                    result = myArray[i].value.y;
+                }
+            }
+
+            return result;
+        }, 
+
+        textPosX () {
+            
+        }, 
+
+        textPosY () {
+
+        },
+
+        year () {
+            return this.total.year;
+        }
+
+    },
+
+    methods: {
+        getData: function() {
+
+            let top = summary[this.total.ticker];
+
+            data = [];
+
+            for (let yr = this.year_range[0]; yr <= this.year_range[1]; yr++) {
+                if (this.total.name === "NetIncome") {
+                    data.push(top[yr].net_income_post_minority_interest || top[yr].net_income);
+                } else {
+                    data.push(top[yr][translator[this.total.name]]);
+                }
+
+            }
+
+            return data;
+
+            
+        }
+    }
+
+})
 
 //"Datatip is the tooltip for the bars"
 Vue.component('datatip', {
@@ -161,40 +472,40 @@ Vue.component('datatip', {
     },
 
     //put back in v-if="showing" when ready // IMPORTANT IMPORTANT 
-    template: `<div id="datatip" :style="{top:position[1] + 100, left: position[0] + 450}">
+    template: `<div id="datatip" :style="{top:position[1] + 100, left: position[0] + 600}">
 
-    <h3> {{ totalOfInterest.account }} </h3>
+    <h2 class="subviztitle"> {{ totalOfInterest.account }}: \$\ {{ totalOfInterest.value }} </h2>
 
     <div v-if="checkRevenue" class="subviz">
     <lollipop :total="totalOfInterest"></lollipop>
     </div>
 
     <div v-else-if="checkExp" class="subviz">
-    This is operating expenses.
+    <lollipop :total="totalOfInterest"></lollipop>
     </div>
 
     <div v-else-if="checkEBIT" class="subviz">
-    This is operating profit.
+    <line-chart :total="totalOfInterest"></line-chart>
     </div>
 
     <div v-else-if="checkOther" class="subviz">
-    This is other income or expense.
+    <line-chart :total="totalOfInterest"></line-chart>
     </div>
 
     <div v-else-if="checkPretax" class="subviz">
-    This is pretax income.
+    <line-chart :total="totalOfInterest"></line-chart>
     </div>
 
     <div v-else-if="checkTax" class="subviz">
-    This is taxes.
+    <line-chart :total="totalOfInterest"></line-chart>
     </div>
 
     <div v-else-if="checkMinInt" class="subviz">
-    This is minority interest.
+    <line-chart :total="totalOfInterest"></line-chart>
     </div>
 
     <div v-else-if="checkNetIncome" class="subviz">
-    This is Net Income.
+    <line-chart :total="totalOfInterest"></line-chart>
     </div>
 
     <div v-else>
@@ -316,7 +627,7 @@ Vue.component('data-table', {
     <th class="metricName"> {{ x[1] }} </th>
     <td>{{ present(metrics.current[x[0]], x[2]) }}</td>
     <td>{{ present(metrics.base[x[0]], x[2]) }}</td>
-    <td>{{ present(100 * metrics.current[x[0]] / metrics.base[x[0]], 'wholeRnd') }}</td>
+    <td>{{ 100 - (present(100 * metrics.current[x[0]] / metrics.base[x[0]], 'twoDec')) }}</td>
     </tr>
     
     </tbody>
@@ -397,7 +708,7 @@ Vue.component('data-table', {
                     pretax_margin: pl2.pretax_income / pl2.total_revenue,
                     net_profit_margin: pl2.net_income / pl2.total_revenue,
                     revenue_growth: this.nullval,
-                    earnings_per_share: 0,
+                    earnings_per_share: 2.53,
                     return_on_equity: pl2.net_income / bs2.equity.total_equity,
                     cash_and_cash_equivalents: 0,
                     ebitda: 0,
@@ -411,7 +722,7 @@ Vue.component('data-table', {
                     pretax_margin: pl1.pretax_income / pl1.total_revenue,
                     net_profit_margin: pl1.net_income / pl1.total_revenue,
                     revenue_growth: (pl1.total_revenue / pl2.total_revenue) - 1,
-                    earnings_per_share: 0,
+                    earnings_per_share: 2.75,
                     return_on_equity: pl1.net_income / bs1.equity.total_equity,
                     cash_and_cash_equivalents: 0,
                     ebitda: 0,
@@ -801,7 +1112,7 @@ var app = new Vue({
     data: {
         title: "Visual Value",
         svg_width: 900,
-        margin: { top: 50, left: 50, bottom: 25, right: 500 },
+        margin: { top: 50, left: 60, bottom: 25, right: 500 },
         svg_height: 750,
         //right now this is what contains all the data being rendered, it has a default return in there already
         company: {
@@ -1021,6 +1332,7 @@ var app = new Vue({
         },
 
     },
+
     methods: {
         //process totals gets the main bars into the object format that will be returned to the components
         processTotals() {
@@ -1254,6 +1566,9 @@ var app = new Vue({
 
                     break;
                 }
+
+                step.ticker = this.currentTicker;
+                step.year = this.currentDisplay;
 
             }
 
@@ -1489,6 +1804,7 @@ var app = new Vue({
                 }
             }
         
+            
             return input;
         },
 
