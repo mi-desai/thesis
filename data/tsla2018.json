@@ -1,7 +1,7 @@
 {  
-    "entity_name": "Facebook Inc", 
-    "ticker": "FB",
-    "period": "12_31_2017",
+    "entity_name": "Tesla Inc", 
+    "ticker": "TSLA",
+    "period": "12_31_2018",
     "scale": 1000000,
     "shares": [
         {"component":["Shares Outstanding", 687286090]},
@@ -67,30 +67,34 @@
     },
     "income_statement": {
         "revenue": [
-            { "component": ["Advertising", 39942] },
-            { "component": ["Other Revenue", 711] }
+            { "component": ["Automotive Sales", 17632] },
+            { "component": ["Automotive Leases", 883] },
+            { "component": ["Energy Generation and Storage", 1555] },
+            { "component": ["Services and Other", 1391] }
         ],
-        "total_revenue": 40653,
+        "total_revenue": 21461,
         "operating_expenses": [
-            { "component": ["Cost of Revenue", 9355]},
-            { "component": ["Research and development", 10273]},
-            { "component": ["Marketing and sales", 7846]},
-            { "component": ["General and administrative", 3451]}
+            { "component": ["Cost of automotive sales", 13686]},
+            { "component": ["Cost of automotive leasing", 488]},
+            { "component": ["Cost of energy generation and storage", 1365]},
+            { "component": ["Cost of services and other", 1880]},
+            { "component": ["Research and development", 1460]},
+            { "component": ["Selling, general and administrative", 2835]},
+            { "component": ["Restructuring and other", 135]}
         ],
-        "total_operating_costs": -20450,
-        "operating_income": 20203,
+        "total_operating_costs": -21849,
+        "operating_income": -388,
         "other_income_expense": [
-            { "component": ["Interest Income", 398] },
-            { "component": ["Interest Expense", -6] },
-            { "component": ["FX Translation Losses", -6] },
-            { "component": ["Other", 5] }
+            { "component": ["Interest Income", 24] },
+            { "component": ["Interest Expense", -663] },
+            { "component": ["Other income (expense)", 22] }
         ],
-        "total_other_income_expense": 391,
-        "pretax_income": 20594,
-        "total_tax_provision": -4660, 
-        "net_income_attributable_noncontrolling_interest": null,
-        "net_income": 15934,
-        "net_income_post_minority_interest": null
+        "total_other_income_expense": -617,
+        "pretax_income": -1005,
+        "total_tax_provision": -58, 
+        "net_income_attributable_noncontrolling_interest": 87,
+        "net_income": -1063,
+        "net_income_post_minority_interest": -976
     }, 
     "cash_flow_statement": {
         "operating_cash_flows": {
@@ -139,8 +143,10 @@
         }
     },
     "mda": [
-        {"paragraph": "Our key community metrics and financial results for 2017 are as follows:"},
-        {"paragraph": "Community growth: Daily active users (DAUs) were 1.40 billion on average for December 2017, an increase of 14% year-over-year. Monthly active users (MAUs) were 2.13 billion as of December 31, 2017, an increase of 14% year-over-year."},
-        {"paragraph": "Financial results: Revenue was $40.65 billion, up 47% year-over-year, and ad revenue was $39.94 billion, up 49% year-over-year.Total costs and expenses were $20.45 billion. Income from operations was $20.20 billion. Net income was $15.93 billion with diluted earnings per share of $5.39. Capital expenditures were $6.73 billion. Effective tax rate was 23%. Cash and cash equivalents, and marketable securities were $41.71 billion as of December 31, 2017. Headcount was 25,105 as of December 31, 2017."}
+        {"paragraph": "Our mission is to accelerate the world’s transition to sustainable energy. We design, develop, manufacture, lease and sell high-performance fully electric vehicles, solar energy generation systems and energy storage products. We also offer maintenance, installation, operation and other services related to our products."},
+        {"paragraph": "Automotive"},
+        {"paragraph": "Our production vehicle fleet includes our Model S premium sedan and our Model X SUV, which are our highest-performance vehicles, and our Model 3, a lower-priced sedan designed for the mass market. We continue to enhance our vehicle offerings with enhanced Autopilot options, internet connectivity and free over-the-air software updates to provide additional safety, convenience and performance features. In addition, we have several future electric vehicles in our product pipeline, including Model Y, Tesla Semi, a pickup truck and a new version of the Tesla Roadster. In 2018, we continued to scale our automotive operations, particularly our ramp of Model 3, and achieved total production of 254,530 vehicles and delivered 245,506 vehicles, representing year-over-year increases of approximately 152% and 138%, respectively."},
+        {"paragraph": "Energy Generation and Storage"},
+        {"paragraph": "We lease and sell retrofit solar energy systems and sell renewable energy and energy storage products to our customers, and are ramping our Solar Roof product that combines solar energy generation with attractive, integrated styling. Our energy storage products, which we manufacture at Gigafactory 1, consist of Powerwall, mostly for residential applications, and Powerpack, for commercial, industrial and utility-scale applications. During 2018, we deployed 1.04 GWh of energy storage products, nearly tripling our 358 MWh of energy storage deployments during 2017. We also deployed 326 megawatts (“MW”) of solar energy generation during 2018."}
     ]
 }

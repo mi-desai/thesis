@@ -25,7 +25,12 @@ rect:hover {
 }
 
 .negative path {
-    stroke: #d6604d;
+    stroke: black;
+    stroke-width: 2px;
+}
+
+.Other path {
+    stroke: black;
 }
 
 .negative rect:hover {
@@ -41,6 +46,7 @@ rect:hover {
 
 .EBIT path {
     stroke: black;
+    stroke-width: 2px;
 }
 
 .EBIT rect:hover {
@@ -56,6 +62,7 @@ rect:hover {
 
 .Pretax path {
     stroke: black;
+    stroke-width: 2px;
 }
 
 .Pretax rect:hover {

@@ -75,7 +75,7 @@ Vue.component('bar', {
         },
 
         mouseleave() {
-            this.$emit('hideBar');
+            // this.$emit('hideBar');
         }
 
     },
@@ -86,6 +86,7 @@ Vue.component('bar', {
     </g>`,
 })
 
+//revenues or expenses have lollipops
 Vue.component('lollipop', {
     props: {
         total: Object
@@ -96,7 +97,7 @@ Vue.component('lollipop', {
         
         <path v-for="index in paths" :d="index" stroke="black" stroke-width="3px"></path>
 
-        <g><circle class="lollipop" v-for="{x, y} in scaledTotals" :cx="x+25" :cy="y+40" r="8" stroke="black" stroke-width="4px"></circle></g>
+        <g><circle class="lollipop" v-for="{x, y} in scaledTotals" :cx="x+25" :cy="y+40" r="8" stroke="color" stroke-width="4px" fill="color"></circle></g>
 
         <g><text class="lollipop" v-for="{x, y, name, value} in scaledTotals" :x="x+40" :y="y+40"> {{ name }}: {{value}} </text></g>
         <g><text class="lollipop" v-for="{x, y, name, value} in scaledTotals" :x="x+40" :y="y+55"> {{ Math.round(((value * 100) / sumTotal)) }}% </text></g>
@@ -216,6 +217,14 @@ Vue.component('lollipop', {
             console.log(paths);
         
             return paths;
+        },
+
+        color: function() {
+            if (this.total.name === "Revenue") {
+                return '#4393c3';
+            } else {
+                return '#d6604d';
+            }
         }
         
     },
@@ -236,6 +245,7 @@ Vue.component('lollipop', {
 
 })
 
+//tooltip line chart that gets created on hover for anything that's not revenue or expense
 Vue.component('line-chart', {
     props: {
         total: Object
@@ -248,12 +258,12 @@ Vue.component('line-chart', {
 
         <path :d="dPath" stroke="black" stroke-width="3px"></path>
 
-        <circle :cx="circleX" :cy="circleY" r="20" stroke-width="2px" stroke-dasharray="5,5" stroke="blue" fill="none"></circle>
+        <circle :cx="circleX" :cy="circleY" r="20" stroke-width="2px" stroke-dasharray="5,5" stroke="#4393c3" fill="none"></circle>
+        <circle></circle>
 
-        <text></text>
+        <text :x="circleX-80" :y="circleY"> {{ year }} </text>
 
         <path :d="yAxisPath" stroke="black" stroke-width="1px"></path>
-
     </svg>
     </div>`,
 
@@ -319,6 +329,7 @@ Vue.component('line-chart', {
             let data = this.scaledValues;
 
             let line = d3.line()
+                .curve(d3.curveCardinal.tension(0.5))
                 .x(function(d) {return d.x})
                 .y(function(d) {return d.y});
             
@@ -424,14 +435,6 @@ Vue.component('line-chart', {
             return result;
         }, 
 
-        textPosX () {
-            
-        }, 
-
-        textPosY () {
-
-        },
-
         year () {
             return this.total.year;
         }
@@ -472,7 +475,7 @@ Vue.component('datatip', {
     },
 
     //put back in v-if="showing" when ready // IMPORTANT IMPORTANT 
-    template: `<div id="datatip" :style="{top:position[1] + 100, left: position[0] + 600}">
+    template: `<div id="datatip" v-if="showing" :style="{top:position[1] + 100, left: position[0] + 600}">
 
     <h2 class="subviztitle"> {{ totalOfInterest.account }}: \$\ {{ totalOfInterest.value }} </h2>
 
@@ -608,6 +611,29 @@ Vue.component('datatip', {
     
 })
 
+//got management discussion and analysis 
+Vue.component('annotation', {
+    props: {
+        company: Object
+    },
+
+    template: `<div id="description">
+
+    <h2> 10-K - Management Discussion & Analysis </h2>
+
+        <p v-for="x in company.mda"> {{ x.paragraph }} </p>
+
+    </div>`, 
+
+    mounted: function () {
+        let style = document.createElement('link');
+        style.type = "text/css";
+        style.rel = "stylesheet";
+        style.href = 'description.css';
+        document.head.appendChild(style)
+    }
+})
+
 //Data Table takes the base and current years of a company and returns a table element to the UI on the right
 Vue.component('data-table', {
     props: {
@@ -627,7 +653,7 @@ Vue.component('data-table', {
     <th class="metricName"> {{ x[1] }} </th>
     <td>{{ present(metrics.current[x[0]], x[2]) }}</td>
     <td>{{ present(metrics.base[x[0]], x[2]) }}</td>
-    <td>{{ 100 - (present(100 * metrics.current[x[0]] / metrics.base[x[0]], 'twoDec')) }}</td>
+    <td>{{ present(100 * metrics.current[x[0]] / metrics.base[x[0]], 'perDiff') }}</td>
     </tr>
     
     </tbody>
@@ -674,9 +700,6 @@ Vue.component('data-table', {
 
             switch(format) {
                 case "%rnd":
-                    num = Math.round(num * 100) / 100;
-                break;
-
                 case "twoDec":
                     num = Math.round(num * 100) / 100;
                 break;
@@ -684,6 +707,10 @@ Vue.component('data-table', {
                 case "wholeRnd": 
                     num = Math.round(num);
                 break;
+
+                case "perDiff":
+                    // num = 100 - (Math.round(num * 10) / 10);
+                    num = Math.round((100 - num) * 10) / 10;
             }
 
             if (Number.isNaN(num)) {
@@ -703,7 +730,7 @@ Vue.component('data-table', {
 
             let metrics = {
                 base: {
-                    gross_margin: 0,
+                    gross_margin: getCompValue(base, 'Cost of') / pl2.total_revenue,
                     operating_margin: pl2.operating_income / pl2.total_revenue,
                     pretax_margin: pl2.pretax_income / pl2.total_revenue,
                     net_profit_margin: pl2.net_income / pl2.total_revenue,
@@ -717,7 +744,7 @@ Vue.component('data-table', {
                     return_on_assets: pl2.total_revenue / bs2.assets.total_assets
                 }, 
                 current: {
-                    gross_margin: 0,
+                    gross_margin: getCompValue(current, 'Cost of') / pl1.total_revenue,
                     operating_margin: pl1.operating_income / pl1.total_revenue,
                     pretax_margin: pl1.pretax_income / pl1.total_revenue,
                     net_profit_margin: pl1.net_income / pl1.total_revenue,
@@ -732,32 +759,19 @@ Vue.component('data-table', {
                 }
             };
 
-            
-            // //get eps
-            // function getEPS(statement) {
-            //     let shares = statement.shares;
-            //     let eps;
-            //     for (let i = 0; i < shares.length; i++) {
-            //         if (shares[i].includes("Diluted EPS")) {
-            //             eps = shares[i][1];
-            //         }
-            //     }
-            //     return eps;
-            // }
+            function getCompValue(statement, pattern) {
+                let costs = statement.income_statement.operating_expenses;
+                console.log(costs);
+                let cost = costs.find(
+                    obj => obj.component[0].startsWith(pattern)
+                )
 
-            //get gross margin
-            // function getCOGS(statement) {
-            //     let costs = statement.income_statement.operating_expenses;
-            //     let cogs;
+                if (cost) {
+                    return cost.component[1];
+                }
 
-            //     for (let i = 0; i < costs.length; i++) {
-            //         console.log(costs[i]);
-            //         if (costs[i].startsWith("Cost of")) {
-            //             cogs = costs[i][1]
-            //             console.log(cogs);
-            //         }
-            //     } 
-            // }
+                return 0;
+            }
 
             //get cash
 
@@ -768,6 +782,13 @@ Vue.component('data-table', {
 
             return metrics;
         },
+        handleNaN: function(num) {
+            if (num === NaN) {
+                return " - ";
+            } else {
+                return num;
+            }
+        }
     },
         
     
@@ -836,6 +857,7 @@ Vue.component('zero-line', {
 Vue.component('income-statement', {
     props: {
         totals: Array,
+        company: Object
     },
     template: `<g><bar
     v-for="(total, index) in totals"
@@ -859,7 +881,7 @@ Vue.component('income-statement', {
     :x2="totals[0].bar.start"
     :y2="this.svg_height - 10"
     :label="this.label"
-    ></zero-line><text :x="totals[0].bar.start+3" :y="25">Zero</text></g>`,
+    ></zero-line><text :x="totals[0].bar.start" :y="30">&#8592; Loss / Profit &#8594;</text></g>`,
     data: function () {
         return {
             svg_width: 900,
@@ -869,7 +891,9 @@ Vue.component('income-statement', {
         }
     },
     computed: {
-        
+        moneyScale: function () {
+
+        }
     },
     methods: {
         showBar: function(label, position) {
@@ -897,9 +921,8 @@ Vue.component('company-selector', {
     <select @change="changeCompany" id="company">
         <option value="lng">Cheniere Energy Inc</option>
         <option value="goog">Alphabet Inc</option>
-        <option value="aapl">Apple Inc</option>
+        <option value="tsla">Tesla Inc Inc</option>
         <option value="fb">Facebook Inc</option>
-        <option value="kmi">Kinder Morgan Inc</option>
     </select></div>`,
     data: function () {
         return {}
@@ -1004,7 +1027,7 @@ Vue.component('top-menu', {
     template: `<div id="top">
         <div class="company">
             <div class="column">
-                <div>{{ company.entity_name }} /Ticker: {{company.ticker}}</div> 
+                <div>{{ company.entity_name }}  /  Ticker: {{company.ticker}}</div> 
                 <div class="subtitle"> {{company.period.slice(-4)}} Income Statement </div>
             </div>
         </div>
@@ -1029,6 +1052,10 @@ Vue.component('options-menu', {
     methods: {
         toggleTable: function() {
             this.$emit('toggletable');
+        },
+
+        toggleAnnotation: function() {
+            this.$emit('toggleannotation');
         }
     },
     computed: {
@@ -1040,15 +1067,11 @@ Vue.component('options-menu', {
         <span class="checkmark"></span>
         </label><br>
         <label class="container">Annotate
-        <input type="checkbox">
+        <input id="annotationCheck" type="checkbox" @change="toggleAnnotation">
         <span class="checkmark"></span>
         </label><br>
         <label class="container">Table
         <input id="tableCheck" type="checkbox" @change="toggleTable">
-        <span class="checkmark"></span>
-        </label><br>
-        <label class="container">Spotlight
-        <input type="checkbox">
         <span class="checkmark"></span>
         </label><br>
     </div>`
@@ -1116,154 +1139,162 @@ var app = new Vue({
         svg_height: 750,
         //right now this is what contains all the data being rendered, it has a default return in there already
         company: {
-            "entity_name": "Cheniere Energy Inc",
-            "ticker": "LNG",
-            "period": "12_31_2019",
-            "scale": 1000000,
-            "shares": [
-                ["Outstanding Shares", 254084493],
-                ["Basic EPS", 2.53],
-                ["Diluted EPS", 2.51],
-                ["Weighted Average Shares Outstanding", 256.2],
-                ["Diluted Weighted Average Shares Outstanding", 258.1]
-            ],
-            "balance_sheet": {
-                "assets": {
-                    "current_assets": [
-                        ["Cash and Cash Equivalents", 2474],
-                        ["Restricted Cash", 520],
-                        ["Accounts and other receivables", 491],
-                        ["Inventory", 312],
-                        ["Derivative Assets", 323],
-                        ["Other Current Assets", 92]
-                    ],
-                    "total_current_assets": 4212,
-                    "non_current_assets": [
-                        ["Property Plant and Equipment, Net", 29673],
-                        ["Non-current Derivative Assets", 174],
-                        ["Goodwill", 77],
-                        ["Deferred Tax Assets", 529],
-                        ["Operating Lease Assets", 439],
-                        ["Other non-current assets, net", 388]
-                    ],
-                    "total_non_current_assets": 31280,
-                    "total_assets": 35492
+                "entity_name": "Cheniere Energy Inc",
+                "ticker": "LNG",
+                "period": "12_31_2019",
+                "scale": 1000000,
+                "shares": [
+                    {"component": ["Outstanding Shares", 254084493]},
+                    {"component":["Basic EPS", 2.53]},
+                    {"component":["Diluted EPS", 2.51]},
+                    {"component":["Weighted Average Shares Outstanding", 256.2]},
+                    {"component":["Diluted Weighted Average Shares Outstanding", 258.1]}
+                ],
+                "balance_sheet": {
+                    "assets": {
+                        "current_assets": [
+                            {"component": ["Cash and Cash Equivalents", 2474]},
+                            {"component": ["Restricted Cash", 520]},
+                            {"component":["Accounts and other receivables", 491]},
+                            {"component":["Inventory", 312]},
+                            {"component":["Derivative Assets", 323]},
+                            {"component":["Other Current Assets", 92]}
+                        ],
+                        "total_current_assets": 4212,
+                        "non_current_assets": [
+                            {"component":["Property Plant and Equipment, Net", 29673]},
+                            {"component":["Non-current Derivative Assets", 174]},
+                            {"component":["Goodwill", 77]},
+                            {"component":["Deferred Tax Assets", 529]},
+                            {"component":["Operating Lease Assets", 439]},
+                            {"component":["Other non-current assets, net", 388]}
+                        ],
+                        "total_non_current_assets": 31280,
+                        "total_assets": 35492
+                    },
+                    "liabilities": {
+                        "current_liabilities": [
+                            {"component": ["Accounts Payable", 66]},
+                            {"component": ["Accrued Liabilities", 1281]},
+                            {"component": ["Current Debt", 0]},
+                            {"component": ["Deferred Revenue", 161]},
+                            {"component": ["Derivative Liabilities", 117]},
+                            {"component": ["Current Operating Lease Liabilities", 236]},
+                            {"component": ["Other Current Liabilites", 13]}
+                        ],
+                        "total_current_liabilities": 1874,
+                        "non_current_liabilities": [
+                            {"component": ["Long-term debt, net", 30774]},
+                            {"component": ["Non-current operating lease liabilities", 189]},
+                            {"component": ["Non-current finance lease liabilities", 58]},
+                            {"component": ["Non-current derivative liabilities", 151]},
+                            {"component": ["Other non-current liabilities", 11]}
+                        ],
+                        "total_non_current_liabilities": 31189,
+                        "total_liabilities": 33057
+                    },
+                    "equity": {
+                        "stock": [
+                            {"component": ["Common Stock", 1]},
+                            {"component": ["Treasury Stock", -674]},
+                            {"component": ["Additional Paid In Capital", 4167]},
+                            {"component": ["Retained Earnings", -3508]}
+                        ],
+                        "preferred_stock": [{"component":["Preferred Stock", 0]}],
+                        "minority_interest": 2449,
+                        "total_equity": 2435
+                    }
                 },
-                "liabilities": {
-                    "current_liabilities": [
-                        ["Accounts Payable", 66],
-                        ["Accrued Liabilities", 1281],
-                        ["Current Debt", 0],
-                        ["Deferred Revenue", 161],
-                        ["Derivative Liabilities", 117],
-                        ["Current Operating Lease Liabilities", 236],
-                        ["Other Current Liabilites", 13]
+                "income_statement": {
+                    "revenue": [
+                        { "component": ["LNG Contract Revenues", 8817] },
+                        { "component": ["Regasification Revenues", 266] },
+                        { "component": ["Other Revenues & Derivative Gains and Losses", 647] }
                     ],
-                    "total_current_liabilities": 1874,
-                    "non_current_liabilities": [
-                        ["Long-term debt, net", 30774],
-                        ["Non-current operating lease liabilities", 189],
-                        ["Non-current finance lease liabilities", 58],
-                        ["Non-current derivative liabilities", 151],
-                        ["Other non-current liabilities", 11]
+                    "total_revenue": 9730,
+                    "operating_expenses": [
+                        { "component": ["Cost of Sales", 5079] },
+                        { "component": ["Operating and Maintenance Expense", 1154] },
+                        { "component": ["Development Expense", 9] },
+                        { "component": ["Selling, General Administrative_expense", 310] },
+                        { "component": ["Depreciation and Amortization Expense", 794] },
+                        { "component": ["Restructuring Expense", 0] },
+                        { "component": ["Impairment Expense and Loss on Disposal of Assets", 23] }
                     ],
-                    "total_non_current_liabilities": 31189,
-                    "total_liabilities": 33057
+                    "total_operating_costs": -7369,
+                    "operating_income": 2361,
+                    "other_income_expense": [
+                        { "component": ["Interest Expense, net of capitalized interest", -1432] },
+                        { "component": ["Loss on modification or extinguishment of debt", -55] },
+                        { "component": ["Derivative Gain (Loss), net", -134] },
+                        { "component": ["Other income (expense)", -25] }
+                    ],
+                    "total_other_income_expense": -1646,
+                    "pretax_income": 715,
+                    "total_tax_provision": 517,
+                    "net_income_attributable_noncontrolling_interest": -584,
+                    "net_income": 1232,
+                    "net_income_post_minority_interest": 648
                 },
-                "equity": {
-                    "stock": [
-                        ["Common Stock", 1],
-                        ["Treasury Stock", -674],
-                        ["Additional Paid In Capital", 4167],
-                        ["Retained Earnings", -3508]
+                "cash_flow_statement": {
+                    "operating_cash_flows": {
+                        "reconciliation_adjustments": [
+                            { "component": ["Depreciation and Amortization Expense", 794] },
+                            { "component": ["Share-based compensation expense", 131] },
+                            { "component": ["Non-cash interest expense", 143] },
+                            { "component": ["Amortization of debt issuance costs, deferred commitment fees, premium and discount", 103] },
+                            { "component": ["Non-cash operating lease costs", 350] },
+                            { "component": ["Loss on modification or extinguishment of debt", 55] },
+                            { "component": ["Total losses (gains) on derivatives, net", -400] },
+                            { "component": ["Net cash provided by (used for) settlement of derivative instruments", 138] },
+                            { "component": ["Impairment expense and loss on disposal of assets", 23] },
+                            { "component": ["Impairment or loss on equity method investments", 88] },
+                            { "component": ["Deferred Taxes", -521] },
+                            { "component": ["Other", 0] }
+                        ],
+                        "total_reconciliation_adjustments": 904,
+                        "working_capital_changes": [
+                            { "component": ["Accounts and other receivables", 1] },
+                            { "component": ["Inventory", 11] },
+                            { "component": ["Other current assets", -18] },
+                            { "component": ["Accounts payable and accrued liabilities", 52] },
+                            { "component": ["Deferred revenue", 22] },
+                            { "component": ["Operating lease liabilities", -366] },
+                            { "component": ["Finance lease liabilities", 1] },
+                            { "component": ["Other, net", -6] }
+                        ],
+                        "total_change_in_working_capital": -303
+                    },
+                    "total_operating_cash_flows": 1833,
+                    "investing_cash_flows": [
+                        { "component": ["Property, plant and equipment, net", -3056] },
+                        { "component": ["Investment in equity method investment", -105] },
+                        { "component": ["Other", -2] }
                     ],
-                    "preferred_stock": [["Preferred Stock", 0]],
-                    "minority_interest": 2449,
-                    "total_equity": 2435
-                }
-            },
-            "income_statement": {
-                "revenue": [
-                    { component: ["LNG Contract Revenues", 8817] },
-                    { component: ["Regasification Revenues", 266] },
-                    { component: ["Other Revenues & Derivative Gains and Losses", 647] }
-                ],
-                "total_revenue": 9730,
-                "operating_expenses": [
-                    { component: ["Cost of Sales", 5079] },
-                    { component: ["Operating and Maintenance Expense", 1154] },
-                    { component: ["Development Expense", 9] },
-                    { component: ["Selling, General Administrative_expense", 310] },
-                    { component: ["Depreciation and Amortization Expense", 794] },
-                    { component: ["Restructuring Expense", 0] },
-                    { component: ["Impairment Expense and Loss on Disposal of Assets", 23] }
-                ],
-                "total_operating_costs": -7369,
-                "operating_income": 2361,
-                "other_income_expense": [
-                    { component: ["Interest Expense, net of capitalized interest", -1432] },
-                    { component: ["Loss on modification or extinguishment of debt", -55] },
-                    { component: ["Derivative Gain (Loss), net", -134] },
-                    { component: ["Other income (expense)", -25] }
-                ],
-                "total_other_income_expense": -1646,
-                "pretax_income": 715,
-                "total_tax_provision": 517,
-                "net_income_attributable_noncontrolling_interest": -584,
-                "net_income": 1232,
-                "net_income_post_minority_interest": 648
-            },
-            "cash_flow_statement": {
-                "operating_cash_flows": {
-                    "reconciliation_adjustments": [
-                        { component: ["Depreciation and Amortization Expense", 794] },
-                        { component: ["Share-based compensation expense", 131] },
-                        { component: ["Non-cash interest expense", 143] },
-                        { component: ["Amortization of debt issuance costs, deferred commitment fees, premium and discount", 103] },
-                        { component: ["Non-cash operating lease costs", 350] },
-                        { component: ["Loss on modification or extinguishment of debt", 55] },
-                        { component: ["Total losses (gains) on derivatives, net", -400] },
-                        { component: ["Net cash provided by (used for) settlement of derivative instruments", 138] },
-                        { component: ["Impairment expense and loss on disposal of assets", 23] },
-                        { component: ["Impairment or loss on equity method investments", 88] },
-                        { component: ["Deferred Taxes", -521] },
-                        { component: ["Other", 0] }
+                    "total_investing_cash_flows": -3163,
+                    "financing_cash_flows": [
+                        { "component": ["Proceeds from the issuance of debt", 6434] },
+                        { "component": ["Repayments of Debt", -4346] },
+                        { "component": ["Debt issuance and deferred financing costs", -51] },
+                        { "component": ["Debt extinguishment costs", -15] },
+                        { "component": ["Distributions and dividends to non-controlling interest", -590] },
+                        { "component": ["Payments related to tax withholdings for share-based compensation", -19] },
+                        { "component": ["Repurchase of common stock", -249] },
+                        { "component": ["Other", 4] }
                     ],
-                    "total_reconciliation_adjustments": 904,
-                    "working_capital_changes": [
-                        { component: ["Accounts and other receivables", 1] },
-                        { component: ["Inventory", 11] },
-                        { component: ["Other current assets", -18] },
-                        { component: ["Accounts payable and accrued liabilities", 52] },
-                        { component: ["Deferred revenue", 22] },
-                        { component: ["Operating lease liabilities", -366] },
-                        { component: ["Finance lease liabilities", 1] },
-                        { component: ["Other, net", -6] }
-                    ],
-                    "total_change_in_working_capital": -303
-                },
-                "total_operating_cash_flows": 1833,
-                "investing_cash_flows": [
-                    { component: ["Property, plant and equipment, net", -3056] },
-                    { component: ["Investment in equity method investment", -105] },
-                    { component: ["Other", -2] }
-                ],
-                "total_investing_cash_flows": -3163,
-                "financing_cash_flows": [
-                    { component: ["Proceeds from the issuance of debt", 6434] },
-                    { component: ["Repayments of Debt", -4346] },
-                    { component: ["Debt issuance and deferred financing costs", -51] },
-                    { component: ["Debt extinguishment costs", -15] },
-                    { component: ["Distributions and dividends to non-controlling interest", -590] },
-                    { component: ["Payments related to tax withholdings for share-based compensation", -19] },
-                    { component: ["Repurchase of common stock", -249] },
-                    { component: ["Other", 4] }
-                ],
-                "total_financing_cash_flows": 1168,
-                "change_in_cash": -162,
-                "beginning_cash_balance": 3156,
-                "ending_cash_balance": 2994
-            }
+                    "total_financing_cash_flows": 1168,
+                    "change_in_cash": -162,
+                    "beginning_cash_balance": 3156,
+                    "ending_cash_balance": 2994
+                }, 
+                "mda": [
+                    {"paragraph": "Cheniere, a Delaware corporation, is a Houston-based energy infrastructure company primarily engaged in LNG-related businesses. We provide clean, secure and affordable LNG to integrated energy companies, utilities and energy trading companies around the world. We aspire to conduct our business in a safe and responsible manner, delivering a reliable, competitive and integrated source of LNG to our customers. We own and operate the Sabine Pass LNG terminal in Louisiana, one of the largest LNG production facilities in the world, through our ownership interest in and management agreements with Cheniere Partners, which is a publicly traded limited partnership that we created in 2007. As of December 31, 2019, we owned 100% of the general partner interest and 48.6% of the limited partner interest in Cheniere Partners. We also own and operate the Corpus Christi LNG terminal in Texas, which is wholly owned by us."},
+                    {"paragraph": "The Sabine Pass LNG terminal is located in Cameron Parish, Louisiana, on the Sabine-Neches Waterway less than four miles from the Gulf Coast. Cheniere Partners, through its subsidiary SPL, is currently operating five natural gas liquefaction Trains and is constructing one additional Train for a total production capacity of approximately 30 mtpa of LNG (the “SPL Project”) at the Sabine Pass LNG terminal. The Sabine Pass LNG terminal has operational regasification facilities owned by Cheniere Partners’ subsidiary, SPLNG, that include pre-existing infrastructure of five LNG storage tanks with aggregate capacity of approximately 17 Bcfe, two marine berths that can each accommodate vessels with nominal capacity of up to 266,000 cubic meters and vaporizers with regasification capacity of approximately 4 Bcf/d. Cheniere Partners also owns a 94-mile pipeline through its subsidiary, CTPL, that interconnects the Sabine Pass LNG terminal with a number of large interstate pipelines."},
+                    {"paragraph": "We also own the Corpus Christi LNG terminal near Corpus Christi, Texas, and are currently operating two Trains and are constructing one additional Train for a total production capacity of approximately 15 mtpa of LNG. Additionally, we are operating a 23-mile natural gas supply pipeline that interconnects the Corpus Christi LNG terminal with several interstate and intrastate natural gas pipelines (the “Corpus Christi Pipeline” and together with the Trains, the “CCL Project”) through our subsidiaries CCL and CCP, respectively. The CCL Project, once fully constructed, will contain three LNG storage tanks with aggregate capacity of approximately 10 Bcfe and two marine berths that can each accommodate vessels with nominal capacity of up to 266,000 cubic meters."},
+                    {"paragraph": "We have contracted approximately 85% of the total production capacity from the SPL Project and the CCL Project (collectively, the “Liquefaction Projects”) on a term basis. This includes volumes contracted under SPAs in which the customers are required to pay a fixed fee with respect to the contracted volumes irrespective of their election to cancel or suspend deliveries of LNG cargoes, as well as volumes contracted under integrated production marketing (“IPM”) gas supply agreements."},
+                    {"paragraph": "Additionally, separate from the CCH Group, we are developing an expansion of the Corpus Christi LNG terminal adjacent to the CCL Project (“Corpus Christi Stage 3”) through our subsidiary CCL Stage III for up to seven midscale Trains with an expected total production capacity of approximately 10 mtpa of LNG. We received approval from FERC in November 2019 to site, construct and operate the expansion project."},
+                    {"paragraph": "We remain focused on operational excellence and customer satisfaction. Increasing demand of LNG has allowed us to expand our liquefaction infrastructure in a financially disciplined manner. We hold significant land positions at both the Sabine Pass LNG terminal and the Corpus Christi LNG terminal which provide opportunity for further liquefaction capacity expansion. The development of these sites or other projects, including infrastructure projects in support of natural gas supply and LNG demand, will require, among other things, acceptable commercial and financing arrangements before we can make a final investment decision (“FID”)."}
+                ]
         },
         //these will be the updated values that react to the interface selectioms
         base: {},
@@ -1271,6 +1302,7 @@ var app = new Vue({
         position: [],
         showing: false,
         tableVisible: false,
+        annotationVisible: false,
         zero: 'Zero',
         currentsel: 2019,
         basesel: 'Select a base year.'
@@ -1880,6 +1912,14 @@ var app = new Vue({
 
         arrangeComponents: function(a, b) {
             return Math.abs(a[2]) - Math.abs(b[2]);
+        },
+
+        toggleAnnotation: function() {
+            this.annotationVisible = !this.annotationVisible;
+        },
+
+        backClick: function() {
+            this.showing = false;
         }
     }
 

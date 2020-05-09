@@ -1,7 +1,7 @@
 {  
-    "entity_name": "Facebook Inc", 
-    "ticker": "FB",
-    "period": "12_31_2017",
+    "entity_name": "Tesla Inc", 
+    "ticker": "TSLA",
+    "period": "12_31_2016",
     "scale": 1000000,
     "shares": [
         {"component":["Shares Outstanding", 687286090]},
@@ -67,30 +67,33 @@
     },
     "income_statement": {
         "revenue": [
-            { "component": ["Advertising", 39942] },
-            { "component": ["Other Revenue", 711] }
+            { "component": ["Automotive Sales", 5589] },
+            { "component": ["Automotive Leases", 762] },
+            { "component": ["Energy Generation and Storage", 181] },
+            { "component": ["Services and Other", 468] }
         ],
-        "total_revenue": 40653,
+        "total_revenue": 7000,
         "operating_expenses": [
-            { "component": ["Cost of Revenue", 9355]},
-            { "component": ["Research and development", 10273]},
-            { "component": ["Marketing and sales", 7846]},
-            { "component": ["General and administrative", 3451]}
+            { "component": ["Cost of automotive sales", 4268]},
+            { "component": ["Cost of automotive leasing", 481]},
+            { "component": ["Cost of energy generation and storage", 178]},
+            { "component": ["Cost of services and other", 472]},
+            { "component": ["Research and development", 835]},
+            { "component": ["Selling, general and administrative", 1432]}
         ],
-        "total_operating_costs": -20450,
-        "operating_income": 20203,
+        "total_operating_costs": -7668,
+        "operating_income": -668,
         "other_income_expense": [
-            { "component": ["Interest Income", 398] },
-            { "component": ["Interest Expense", -6] },
-            { "component": ["FX Translation Losses", -6] },
-            { "component": ["Other", 5] }
+            { "component": ["Interest Income", 9] },
+            { "component": ["Interest Expense", -199] },
+            { "component": ["Other income (expense)", 111] }
         ],
-        "total_other_income_expense": 391,
-        "pretax_income": 20594,
-        "total_tax_provision": -4660, 
-        "net_income_attributable_noncontrolling_interest": null,
-        "net_income": 15934,
-        "net_income_post_minority_interest": null
+        "total_other_income_expense": -79,
+        "pretax_income": -746,
+        "total_tax_provision": -27, 
+        "net_income_attributable_noncontrolling_interest": 98,
+        "net_income": -773,
+        "net_income_post_minority_interest": -675
     }, 
     "cash_flow_statement": {
         "operating_cash_flows": {
@@ -139,8 +142,11 @@
         }
     },
     "mda": [
-        {"paragraph": "Our key community metrics and financial results for 2017 are as follows:"},
-        {"paragraph": "Community growth: Daily active users (DAUs) were 1.40 billion on average for December 2017, an increase of 14% year-over-year. Monthly active users (MAUs) were 2.13 billion as of December 31, 2017, an increase of 14% year-over-year."},
-        {"paragraph": "Financial results: Revenue was $40.65 billion, up 47% year-over-year, and ad revenue was $39.94 billion, up 49% year-over-year.Total costs and expenses were $20.45 billion. Income from operations was $20.20 billion. Net income was $15.93 billion with diluted earnings per share of $5.39. Capital expenditures were $6.73 billion. Effective tax rate was 23%. Cash and cash equivalents, and marketable securities were $41.71 billion as of December 31, 2017. Headcount was 25,105 as of December 31, 2017."}
+        {"paragraph": "Our mission is to accelerate the world’s transition to sustainable energy.  We design, develop, manufacture, lease and sell high-performance fully electric vehicles, as well as provide energy storage through the offering of Powerpack and Powerwall.  In addition, through our acquisition of SolarCity Corporation, we also provide solar energy systems to residential and commercial customers. As a result of our acquisition of SolarCity, we have reclassified the presentation of our historic energy storage products revenue and cost of revenue from services and other to energy generation and storage."},
+        {"paragraph": "Automotive"},
+        {"paragraph": "We produce and sell our Model S sedan and our Model X sport utility vehicle. We continue to enhance our vehicle offerings with all-wheel drive capability, autopilot options, Internet connectivity and free over-the-air software updates.  Starting in the fourth quarter of 2016, we introduced second generation of autopilot  which has improved hardware and enhanced functionalities including better safety and performance. In 2016, our production capability continued to scale and gain operational efficiencies.  During 2016, our production volume increased by 64% year-over-year. In the fourth quarter of 2015, we began delivering Model X sport utility vehicle.  In 2016, we greatly ramped the production and deliveries of Model X.  Also, in the first quarter of 2016, we unveiled Model 3, a lower priced sedan designed for the mass market, which received significant interest.  To date, we have substantially completed the design and prototypes of Model 3 and are projecting to start production and deliveries in the second half of 2017."},
+        {"paragraph": "Energy Generation and Storage"},
+        {"paragraph": "Through our acquisition of SolarCity Corporation, or SolarCity, on November 21, 2016, we lease and sell solar energy systems and sell renewable energy to our customers, typically at prices below utility rates. Our long-term agreements with our customers generate a predictable and reliable stream of cash flows.  The operating results of SolarCity from the acquisition date of November 21, 2016 through December 31, 2016 are included in our Consolidated Statements of Operations.  Also in 2016, we introduced solar roof, which we plan to begin selling and installing later in 2017."},
+        {"paragraph": "In addition to solar energy systems, we also sell energy storage products, which consists of the Powerwall for residential applications and the Powerpack for commercial, industrial and utility-scale applications.  In 2016, we completed several of our grid-scale energy storage projects, including the Southern California Edison Mira Loma substation and the American Samoa Island installation."}
     ]
 }

@@ -9,6 +9,7 @@
 #data-table td, #data-table th {
     border-bottom: 2px solid #efefef;
     font-size: 1.1em;
+    text-align: center;
 }
 
 #data-table tr:hover {background-color: #ddd;}
@@ -33,18 +34,4 @@ thead {
 
 #dataTable::-webkit-scrollbar {
     display:none;
-}
-
-.slide-enter-active {
-    transition: all 0.4s ease;
-}
-
-.slide-leave-active {
-    transition: all 0.4s ease;
-}
-
-.slide-enter, .slide-leave-to {
-    transform: translateX(200px);
-    transform: translateY(500px);
-    opacity: 0;
 }

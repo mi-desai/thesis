@@ -1,6 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Signika:wght@400&display=swap');
+
+
 body {
     background: white;
-    font-family: monospace;
+    font-family: 'Signika', sans-serif;
 }
 
 #top {
@@ -25,8 +28,10 @@ body {
     font-size: 1.3em;
     margin-left: 10px;
     margin-top: 15px;
-    width: 15vw;
-    height: 70vh;
+    width: 25vw;
+    min-width: 250px;
+    max-width: 350px;
+    height: 80vh;
     align-items: stretch;
     flex-basis: auto;
     overflow-y: auto;
@@ -65,3 +70,40 @@ body {
     border-bottom: 2px solid #efefef;
 }
 
+#rightside {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+#annotation {
+    height: 32vh;
+    width: 28vw;
+    overflow-y: auto;
+}
+
+#annotation p {
+    font-size: 1.3em;
+}
+
+#annotation::-webkit-scrollbar {
+    display:none;
+}
+
+.slide-enter-active {
+    transition: all 0.4s ease;
+}
+
+.slide-leave-active {
+    transition: all 0.4s ease;
+}
+
+.slide-enter, .slide-leave-to {
+    transform: translateX(200px);
+    transform: translateY(500px);
+    opacity: 0;
+}
+
+#table {
+    padding-top: 20px;
+}
