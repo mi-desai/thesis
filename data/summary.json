@@ -1,5 +1,14 @@
 {
     "fb": {
+        "2015": {
+            "operating_income": 6225,
+            "other_income_expense": -31,
+            "pretax_income": 6194,
+            "taxes": -2506,
+            "minority_interest": null,
+            "net_income": 3688,
+            "net_income_post_minority_interest": null
+        },
         "2016": {
             "operating_income": 12427,
             "other_income_expense": 91,

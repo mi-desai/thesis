@@ -1,7 +1,7 @@
 {  
     "entity_name": "Facebook Inc", 
     "ticker": "FB",
-    "period": "12_31_2018",
+    "period": "12_31_2015",
     "scale": 1000000,
     "shares": [
         {"component":["Shares Outstanding", 687286090]},
